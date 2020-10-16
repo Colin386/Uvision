@@ -3,11 +3,11 @@
 <title>Static Call Graph - [.\Objects\myMotor.axf]</title></head>
 <body><HR>
 <H1>Static Call Graph for image .\Objects\myMotor.axf</H1><HR>
-<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5060750: Last Updated: Fri Oct 16 08:30:37 2020
+<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5060750: Last Updated: Fri Oct 16 09:00:39 2020
 <BR><P>
 <H3>Maximum Stack Usage =         96 bytes + Unknown(Cycles, Untraceable Function Pointers)</H3><H3>
 Call chain for Maximum Stack Depth:</H3>
-main &rArr; leftMotorControl &rArr; setDutyCycle &rArr; __aeabi_ddiv &rArr; _double_round
+main &rArr; rightmotorControl &rArr; setDutyCycle &rArr; __aeabi_ddiv &rArr; _double_round
 <P>
 <H3>
 Mutually Recursive functions
@@ -324,28 +324,28 @@ Global Symbols
 
 <P><STRONG><a name="[4b]"></a>__scatterload_zeroinit</STRONG> (Thumb, 14 bytes, Stack size unknown bytes, handlers.o(i.__scatterload_zeroinit), UNUSED)
 
-<P><STRONG><a name="[3a]"></a>initPWM</STRONG> (Thumb, 298 bytes, Stack size 0 bytes, mymotor.o(i.initPWM))
+<P><STRONG><a name="[38]"></a>initPWM</STRONG> (Thumb, 298 bytes, Stack size 0 bytes, mymotor.o(i.initPWM))
 <BR><BR>[Called By]<UL><LI><a href="#[26]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 </UL>
 
-<P><STRONG><a name="[38]"></a>leftMotorControl</STRONG> (Thumb, 46 bytes, Stack size 16 bytes, mymotor.o(i.leftMotorControl))
-<BR><BR>[Stack]<UL><LI>Max Depth = 96<LI>Call Chain = leftMotorControl &rArr; setDutyCycle &rArr; __aeabi_ddiv &rArr; _double_round
+<P><STRONG><a name="[26]"></a>main</STRONG> (Thumb, 80 bytes, Stack size 0 bytes, mymotor.o(i.main))
+<BR><BR>[Stack]<UL><LI>Max Depth = 96<LI>Call Chain = main &rArr; rightmotorControl &rArr; setDutyCycle &rArr; __aeabi_ddiv &rArr; _double_round
+</UL>
+<BR>[Calls]<UL><LI><a href="#[39]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;setDutyCycle
+<LI><a href="#[3a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;rightmotorControl
+<LI><a href="#[38]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;initPWM
+<LI><a href="#[3b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;delay
+</UL>
+<BR>[Address Reference Count : 1]<UL><LI> entry9a.o(.ARM.Collect$$$$0000000B)
+</UL>
+<P><STRONG><a name="[3a]"></a>rightmotorControl</STRONG> (Thumb, 46 bytes, Stack size 16 bytes, mymotor.o(i.rightmotorControl))
+<BR><BR>[Stack]<UL><LI>Max Depth = 96<LI>Call Chain = rightmotorControl &rArr; setDutyCycle &rArr; __aeabi_ddiv &rArr; _double_round
 </UL>
 <BR>[Calls]<UL><LI><a href="#[39]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;setDutyCycle
 </UL>
 <BR>[Called By]<UL><LI><a href="#[26]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 </UL>
 
-<P><STRONG><a name="[26]"></a>main</STRONG> (Thumb, 80 bytes, Stack size 0 bytes, mymotor.o(i.main))
-<BR><BR>[Stack]<UL><LI>Max Depth = 96<LI>Call Chain = main &rArr; leftMotorControl &rArr; setDutyCycle &rArr; __aeabi_ddiv &rArr; _double_round
-</UL>
-<BR>[Calls]<UL><LI><a href="#[39]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;setDutyCycle
-<LI><a href="#[38]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;leftMotorControl
-<LI><a href="#[3a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;initPWM
-<LI><a href="#[3b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;delay
-</UL>
-<BR>[Address Reference Count : 1]<UL><LI> entry9a.o(.ARM.Collect$$$$0000000B)
-</UL>
 <P><STRONG><a name="[39]"></a>setDutyCycle</STRONG> (Thumb, 172 bytes, Stack size 32 bytes, mymotor.o(i.setDutyCycle))
 <BR><BR>[Stack]<UL><LI>Max Depth = 80<LI>Call Chain = setDutyCycle &rArr; __aeabi_ddiv &rArr; _double_round
 </UL>
@@ -356,8 +356,8 @@ Global Symbols
 <LI><a href="#[2d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_ddiv
 <LI><a href="#[31]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_d2f
 </UL>
-<BR>[Called By]<UL><LI><a href="#[26]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
-<LI><a href="#[38]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;leftMotorControl
+<BR>[Called By]<UL><LI><a href="#[3a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;rightmotorControl
+<LI><a href="#[26]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 </UL>
 <P>
 <H3>

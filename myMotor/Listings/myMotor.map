@@ -7,8 +7,9 @@ Section Cross References
     mymotor.o(i.leftMotorControl) refers to mymotor.o(i.setDutyCycle) for setDutyCycle
     mymotor.o(i.main) refers to mymotor.o(i.initPWM) for initPWM
     mymotor.o(i.main) refers to mymotor.o(i.setDutyCycle) for setDutyCycle
-    mymotor.o(i.main) refers to mymotor.o(i.leftMotorControl) for leftMotorControl
+    mymotor.o(i.main) refers to mymotor.o(i.rightmotorControl) for rightmotorControl
     mymotor.o(i.main) refers to mymotor.o(i.delay) for delay
+    mymotor.o(i.rightmotorControl) refers to mymotor.o(i.setDutyCycle) for setDutyCycle
     mymotor.o(i.setDutyCycle) refers to f2d.o(.text) for __aeabi_f2d
     mymotor.o(i.setDutyCycle) refers to ddiv.o(.text) for __aeabi_ddiv
     mymotor.o(i.setDutyCycle) refers to d2f.o(.text) for __aeabi_d2f
@@ -63,6 +64,7 @@ Removing Unused input sections from the image.
 
     Removing mymotor.o(.rev16_text), (4 bytes).
     Removing mymotor.o(.revsh_text), (4 bytes).
+    Removing mymotor.o(i.leftMotorControl), (46 bytes).
     Removing mymotor.o(i.setFreq), (72 bytes).
     Removing startup_mkl25z4.o(HEAP), (0 bytes).
     Removing system_mkl25z4.o(.rev16_text), (4 bytes).
@@ -72,7 +74,7 @@ Removing Unused input sections from the image.
     Removing fdiv.o(.text), (124 bytes).
     Removing system_mkl25z4.o(i.__ARM_common_switch8), (28 bytes).
 
-10 unused section(s) (total 644 bytes) removed from the image.
+11 unused section(s) (total 690 bytes) removed from the image.
 
 ==============================================================================
 
@@ -149,9 +151,9 @@ Image Symbol Table
     i.delay                                  0x00000644   Section        0  mymotor.o(i.delay)
     delay                                    0x00000645   Thumb Code    20  mymotor.o(i.delay)
     i.initPWM                                0x00000658   Section        0  mymotor.o(i.initPWM)
-    i.leftMotorControl                       0x00000794   Section        0  mymotor.o(i.leftMotorControl)
-    i.main                                   0x000007c4   Section        0  mymotor.o(i.main)
-    i.setDutyCycle                           0x00000820   Section        0  mymotor.o(i.setDutyCycle)
+    i.main                                   0x00000794   Section        0  mymotor.o(i.main)
+    i.rightmotorControl                      0x000007ec   Section        0  mymotor.o(i.rightmotorControl)
+    i.setDutyCycle                           0x0000081c   Section        0  mymotor.o(i.setDutyCycle)
     STACK                                    0x1ffff000   Section      256  startup_mkl25z4.o(STACK)
 
     Global Symbols
@@ -239,11 +241,11 @@ Image Symbol Table
     __ARM_clz                                0x00000609   Thumb Code    46  depilogue.o(i.__ARM_clz)
     __scatterload_zeroinit                   0x00000637   Thumb Code    14  handlers.o(i.__scatterload_zeroinit)
     initPWM                                  0x00000659   Thumb Code   298  mymotor.o(i.initPWM)
-    leftMotorControl                         0x00000795   Thumb Code    46  mymotor.o(i.leftMotorControl)
-    main                                     0x000007c5   Thumb Code    80  mymotor.o(i.main)
-    setDutyCycle                             0x00000821   Thumb Code   172  mymotor.o(i.setDutyCycle)
-    Region$$Table$$Base                      0x000008d4   Number         0  anon$$obj.o(Region$$Table)
-    Region$$Table$$Limit                     0x000008e4   Number         0  anon$$obj.o(Region$$Table)
+    main                                     0x00000795   Thumb Code    80  mymotor.o(i.main)
+    rightmotorControl                        0x000007ed   Thumb Code    46  mymotor.o(i.rightmotorControl)
+    setDutyCycle                             0x0000081d   Thumb Code   172  mymotor.o(i.setDutyCycle)
+    Region$$Table$$Base                      0x000008d0   Number         0  anon$$obj.o(Region$$Table)
+    Region$$Table$$Limit                     0x000008e0   Number         0  anon$$obj.o(Region$$Table)
     __initial_sp                             0x1ffff100   Data           0  startup_mkl25z4.o(STACK)
 
 
@@ -254,63 +256,63 @@ Memory Map of the image
 
   Image Entry point : 0x000000d5
 
-  Load Region LR_1 (Base: 0x00000000, Size: 0x000008e4, Max: 0xffffffff, ABSOLUTE)
+  Load Region LR_1 (Base: 0x00000000, Size: 0x000008e0, Max: 0xffffffff, ABSOLUTE)
 
-    Execution Region ER_RO (Exec base: 0x00000000, Load base: 0x00000000, Size: 0x000008e4, Max: 0xffffffff, ABSOLUTE)
+    Execution Region ER_RO (Exec base: 0x00000000, Load base: 0x00000000, Size: 0x000008e0, Max: 0xffffffff, ABSOLUTE)
 
     Exec Addr    Load Addr    Size         Type   Attr      Idx    E Section Name        Object
 
-    0x00000000   0x00000000   0x000000c0   Data   RO           77    RESET               startup_mkl25z4.o
-    0x000000c0   0x000000c0   0x00000000   Code   RO          119  * .ARM.Collect$$$$00000000  mc_p.l(entry.o)
-    0x000000c0   0x000000c0   0x00000004   Code   RO          138    .ARM.Collect$$$$00000001  mc_p.l(entry2.o)
-    0x000000c4   0x000000c4   0x00000004   Code   RO          141    .ARM.Collect$$$$00000004  mc_p.l(entry5.o)
-    0x000000c8   0x000000c8   0x00000000   Code   RO          143    .ARM.Collect$$$$00000008  mc_p.l(entry7b.o)
-    0x000000c8   0x000000c8   0x00000000   Code   RO          145    .ARM.Collect$$$$0000000A  mc_p.l(entry8b.o)
-    0x000000c8   0x000000c8   0x00000008   Code   RO          146    .ARM.Collect$$$$0000000B  mc_p.l(entry9a.o)
-    0x000000d0   0x000000d0   0x00000000   Code   RO          148    .ARM.Collect$$$$0000000D  mc_p.l(entry10a.o)
-    0x000000d0   0x000000d0   0x00000000   Code   RO          150    .ARM.Collect$$$$0000000F  mc_p.l(entry11a.o)
-    0x000000d0   0x000000d0   0x00000004   Code   RO          139    .ARM.Collect$$$$00002712  mc_p.l(entry2.o)
-    0x000000d4   0x000000d4   0x00000028   Code   RO           79  * .text               startup_mkl25z4.o
-    0x000000fc   0x000000fc   0x0000007a   Code   RO          124    .text               mf_p.l(fmul.o)
+    0x00000000   0x00000000   0x000000c0   Data   RO           83    RESET               startup_mkl25z4.o
+    0x000000c0   0x000000c0   0x00000000   Code   RO          125  * .ARM.Collect$$$$00000000  mc_p.l(entry.o)
+    0x000000c0   0x000000c0   0x00000004   Code   RO          144    .ARM.Collect$$$$00000001  mc_p.l(entry2.o)
+    0x000000c4   0x000000c4   0x00000004   Code   RO          147    .ARM.Collect$$$$00000004  mc_p.l(entry5.o)
+    0x000000c8   0x000000c8   0x00000000   Code   RO          149    .ARM.Collect$$$$00000008  mc_p.l(entry7b.o)
+    0x000000c8   0x000000c8   0x00000000   Code   RO          151    .ARM.Collect$$$$0000000A  mc_p.l(entry8b.o)
+    0x000000c8   0x000000c8   0x00000008   Code   RO          152    .ARM.Collect$$$$0000000B  mc_p.l(entry9a.o)
+    0x000000d0   0x000000d0   0x00000000   Code   RO          154    .ARM.Collect$$$$0000000D  mc_p.l(entry10a.o)
+    0x000000d0   0x000000d0   0x00000000   Code   RO          156    .ARM.Collect$$$$0000000F  mc_p.l(entry11a.o)
+    0x000000d0   0x000000d0   0x00000004   Code   RO          145    .ARM.Collect$$$$00002712  mc_p.l(entry2.o)
+    0x000000d4   0x000000d4   0x00000028   Code   RO           85  * .text               startup_mkl25z4.o
+    0x000000fc   0x000000fc   0x0000007a   Code   RO          130    .text               mf_p.l(fmul.o)
     0x00000176   0x00000176   0x00000002   PAD
-    0x00000178   0x00000178   0x000000f0   Code   RO          128    .text               mf_p.l(ddiv.o)
-    0x00000268   0x00000268   0x0000000e   Code   RO          130    .text               mf_p.l(ffltui.o)
-    0x00000276   0x00000276   0x00000028   Code   RO          132    .text               mf_p.l(ffixui.o)
-    0x0000029e   0x0000029e   0x00000028   Code   RO          134    .text               mf_p.l(f2d.o)
-    0x000002c6   0x000002c6   0x00000038   Code   RO          136    .text               mf_p.l(d2f.o)
-    0x000002fe   0x000002fe   0x00000000   Code   RO          152    .text               mc_p.l(iusefp.o)
-    0x000002fe   0x000002fe   0x00000082   Code   RO          153    .text               mf_p.l(fepilogue.o)
-    0x00000380   0x00000380   0x00000024   Code   RO          159    .text               mc_p.l(init.o)
-    0x000003a4   0x000003a4   0x00000020   Code   RO          161    .text               mc_p.l(llshl.o)
-    0x000003c4   0x000003c4   0x00000022   Code   RO          163    .text               mc_p.l(llushr.o)
-    0x000003e6   0x000003e6   0x0000000e   Code   RO          167    i.__scatterload_copy  mc_p.l(handlers.o)
-    0x000003f4   0x000003f4   0x00000002   Code   RO          168    i.__scatterload_null  mc_p.l(handlers.o)
+    0x00000178   0x00000178   0x000000f0   Code   RO          134    .text               mf_p.l(ddiv.o)
+    0x00000268   0x00000268   0x0000000e   Code   RO          136    .text               mf_p.l(ffltui.o)
+    0x00000276   0x00000276   0x00000028   Code   RO          138    .text               mf_p.l(ffixui.o)
+    0x0000029e   0x0000029e   0x00000028   Code   RO          140    .text               mf_p.l(f2d.o)
+    0x000002c6   0x000002c6   0x00000038   Code   RO          142    .text               mf_p.l(d2f.o)
+    0x000002fe   0x000002fe   0x00000000   Code   RO          158    .text               mc_p.l(iusefp.o)
+    0x000002fe   0x000002fe   0x00000082   Code   RO          159    .text               mf_p.l(fepilogue.o)
+    0x00000380   0x00000380   0x00000024   Code   RO          165    .text               mc_p.l(init.o)
+    0x000003a4   0x000003a4   0x00000020   Code   RO          167    .text               mc_p.l(llshl.o)
+    0x000003c4   0x000003c4   0x00000022   Code   RO          169    .text               mc_p.l(llushr.o)
+    0x000003e6   0x000003e6   0x0000000e   Code   RO          173    i.__scatterload_copy  mc_p.l(handlers.o)
+    0x000003f4   0x000003f4   0x00000002   Code   RO          174    i.__scatterload_null  mc_p.l(handlers.o)
     0x000003f6   0x000003f6   0x0000000a   PAD
-    0x00000400   0x00000400   0x00000010   Code   RO           78    .ARM.__at_0x400     startup_mkl25z4.o
-    0x00000410   0x00000410   0x000000be   Code   RO          155    .text               mf_p.l(depilogue.o)
+    0x00000400   0x00000400   0x00000010   Code   RO           84    .ARM.__at_0x400     startup_mkl25z4.o
+    0x00000410   0x00000410   0x000000be   Code   RO          161    .text               mf_p.l(depilogue.o)
     0x000004ce   0x000004ce   0x00000002   PAD
-    0x000004d0   0x000004d0   0x00000138   Code   RO           88    i.SystemInit        system_mkl25z4.o
-    0x00000608   0x00000608   0x0000002e   Code   RO          157    i.__ARM_clz         mf_p.l(depilogue.o)
-    0x00000636   0x00000636   0x0000000e   Code   RO          169    i.__scatterload_zeroinit  mc_p.l(handlers.o)
+    0x000004d0   0x000004d0   0x00000138   Code   RO           94    i.SystemInit        system_mkl25z4.o
+    0x00000608   0x00000608   0x0000002e   Code   RO          163    i.__ARM_clz         mf_p.l(depilogue.o)
+    0x00000636   0x00000636   0x0000000e   Code   RO          175    i.__scatterload_zeroinit  mc_p.l(handlers.o)
     0x00000644   0x00000644   0x00000014   Code   RO            3    i.delay             mymotor.o
     0x00000658   0x00000658   0x0000013c   Code   RO            4    i.initPWM           mymotor.o
-    0x00000794   0x00000794   0x0000002e   Code   RO            5    i.leftMotorControl  mymotor.o
-    0x000007c2   0x000007c2   0x00000002   PAD
-    0x000007c4   0x000007c4   0x0000005c   Code   RO            6    i.main              mymotor.o
-    0x00000820   0x00000820   0x000000b4   Code   RO            7    i.setDutyCycle      mymotor.o
-    0x000008d4   0x000008d4   0x00000010   Data   RO          165    Region$$Table       anon$$obj.o
+    0x00000794   0x00000794   0x00000058   Code   RO            6    i.main              mymotor.o
+    0x000007ec   0x000007ec   0x0000002e   Code   RO            7    i.rightmotorControl  mymotor.o
+    0x0000081a   0x0000081a   0x00000002   PAD
+    0x0000081c   0x0000081c   0x000000b4   Code   RO            8    i.setDutyCycle      mymotor.o
+    0x000008d0   0x000008d0   0x00000010   Data   RO          171    Region$$Table       anon$$obj.o
 
 
-    Execution Region ER_RW (Exec base: 0x1ffff000, Load base: 0x000008e4, Size: 0x00000000, Max: 0xffffffff, ABSOLUTE)
+    Execution Region ER_RW (Exec base: 0x1ffff000, Load base: 0x000008e0, Size: 0x00000000, Max: 0xffffffff, ABSOLUTE)
 
     **** No section assigned to this execution region ****
 
 
-    Execution Region ER_ZI (Exec base: 0x1ffff000, Load base: 0x000008e4, Size: 0x00000100, Max: 0xffffffff, ABSOLUTE)
+    Execution Region ER_ZI (Exec base: 0x1ffff000, Load base: 0x000008e0, Size: 0x00000100, Max: 0xffffffff, ABSOLUTE)
 
     Exec Addr    Load Addr    Size         Type   Attr      Idx    E Section Name        Object
 
-    0x1ffff000        -       0x00000100   Zero   RW           75    STACK               startup_mkl25z4.o
+    0x1ffff000        -       0x00000100   Zero   RW           81    STACK               startup_mkl25z4.o
 
 
 ==============================================================================
@@ -320,12 +322,12 @@ Image component sizes
 
       Code (inc. data)   RO Data    RW Data    ZI Data      Debug   Object Name
 
-       654         38          0          0          0       7863   mymotor.o
+       650         34          0          0          0       7864   mymotor.o
         56         30        192          0        256        968   startup_mkl25z4.o
        312         46          0          0          0        633   system_mkl25z4.o
 
     ----------------------------------------------------------------------
-      1024        114        208          0        256       9464   Object Totals
+      1020        110        208          0        256       9465   Object Totals
          0          0         16          0          0          0   (incl. Generated)
          2          0          0          0          0          0   (incl. Padding)
 
@@ -376,15 +378,15 @@ Image component sizes
 
       Code (inc. data)   RO Data    RW Data    ZI Data      Debug   
 
-      2068        136        208          0        256       9976   Grand Totals
-      2068        136        208          0        256       9976   ELF Image Totals
-      2068        136        208          0          0          0   ROM Totals
+      2064        132        208          0        256       9977   Grand Totals
+      2064        132        208          0        256       9977   ELF Image Totals
+      2064        132        208          0          0          0   ROM Totals
 
 ==============================================================================
 
-    Total RO  Size (Code + RO Data)                 2276 (   2.22kB)
+    Total RO  Size (Code + RO Data)                 2272 (   2.22kB)
     Total RW  Size (RW Data + ZI Data)               256 (   0.25kB)
-    Total ROM Size (Code + RO Data + RW Data)       2276 (   2.22kB)
+    Total ROM Size (Code + RO Data + RW Data)       2272 (   2.22kB)
 
 ==============================================================================
 

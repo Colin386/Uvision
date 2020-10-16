@@ -101,12 +101,23 @@ void leftMotorControl(float power, int direction) {
 	
 	
 	if(direction) {
-		setDutyCycle(power, 0);
-		setDutyCycle(0, 1);
+		setDutyCycle(power, PTD0_PIN);
+		setDutyCycle(0, PTD1_PIN);
 		
 	} else {
-		setDutyCycle(0, 0);
-		setDutyCycle(power, 0);
+		setDutyCycle(0, PTD0_PIN);
+		setDutyCycle(power, PTD1_PIN);
+	}
+}
+
+void rightmotorControl(float power, int direction) {
+	if(direction) {
+		setDutyCycle(power, PTD2_PIN);
+		setDutyCycle(0, PTD3_PIN);
+		
+	} else {
+		setDutyCycle(0, PTD2_PIN);
+		setDutyCycle(power, PTD3_PIN);
 	}
 }
 
@@ -120,10 +131,10 @@ int main()
 	
 	while(1){
 		
-		leftMotorControl(80,0);
+		rightmotorControl(50,0);
 		delay(0xFFFFF);
 		delay(0xFFFFF);
-		leftMotorControl(100,1);
+		rightmotorControl(50,1);
 		delay(0xFFFFF);
 		delay(0xFFFFF);
 		
