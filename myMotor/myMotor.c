@@ -9,6 +9,8 @@
 #define PRESCALAR 7
 #define PS_ACTUAL 128
 #define DEFAULT_PWM_FREQ 50
+#define TRUE 1
+#define FALSE 0
 
 //pinD0 channel 0, D1 channel 1, D2 channel 2, D3 channel 3
 /* intiPWM() */
@@ -95,8 +97,18 @@ static void delay(volatile uint32_t nof) {
   }
 }
 
-
-
+void leftMotorControl(float power, int direction) {
+	
+	
+	if(direction) {
+		setDutyCycle(power, 0);
+		setDutyCycle(0, 1);
+		
+	} else {
+		setDutyCycle(0, 0);
+		setDutyCycle(power, 0);
+	}
+}
 
 int main()
 {
@@ -108,21 +120,13 @@ int main()
 	
 	while(1){
 		
-		setDutyCycle(80,0);
+		leftMotorControl(80,0);
 		delay(0xFFFFF);
 		delay(0xFFFFF);
-		setDutyCycle(60,1);
+		leftMotorControl(100,1);
 		delay(0xFFFFF);
 		delay(0xFFFFF);
-		setDutyCycle(40,2);
-		delay(0xFFFFF);
-		delay(0xFFFFF);
-		setDutyCycle(20,3);
 		
+	}
 		
-		
-		
-}
-	
-	
 }
