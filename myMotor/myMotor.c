@@ -176,6 +176,41 @@ void move(Direction direction) {
 	stop();
 }
 
+void UARTMotor(uint8_t info;)
+{
+	uint8_t info;
+
+	switch (info)
+	{ 
+	case 1:
+		move(FORWARD);
+		break;
+	case 2:
+		move(BACKWARD);
+		break;
+	case 3:
+		move(LEFT);
+		break;
+	case 4:
+		move(RIGHT);
+		break;
+	case 6:
+		move(FORWARD_LEFT);
+		break;
+	case 7:
+		move(FORWARD_RIGHT);
+		break;
+	case 8:
+		move(BACKWARD_LEFT);
+		break;
+	case 9:
+		move(BACKWARD_RIGHT);
+		break;
+	default:
+		break;
+	}
+}
+
 int main()
 {
 	initPWM();
@@ -193,6 +228,5 @@ int main()
 		delay(0xFFFFF);
 		delay(0xFFFFF);
 		
-	}
-		
+	}	
 }
