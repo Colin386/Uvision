@@ -12,6 +12,12 @@
 #define TRUE 1
 #define FALSE 0
 
+typedef enum Direction
+{
+	LEFT, RIGHT, FORWARD, BACKWARD, FORWARD_LEFT, FORWARD_RIGHT, BACKWARD_LEFT, BACKWARD_RIGHT
+};
+
+
 //pinD0 channel 0, D1 channel 1, D2 channel 2, D3 channel 3
 /* intiPWM() */
 
@@ -90,6 +96,9 @@ void setFreq(unsigned int value, int channel)
 	setDutyCycle(50.0, channel);
 }
 
+/*
+	1 nof = 1/48Mhz = 21 nanoseconds
+*/
 static void delay(volatile uint32_t nof) {
   while(nof!=0) {
     __asm("NOP");
@@ -98,8 +107,6 @@ static void delay(volatile uint32_t nof) {
 }
 
 void leftMotorControl(float power, int direction) {
-	
-	
 	if(direction) {
 		setDutyCycle(power, PTD0_PIN);
 		setDutyCycle(0, PTD1_PIN);
@@ -121,6 +128,89 @@ void rightmotorControl(float power, int direction) {
 	}
 }
 
+void stop() {
+	leftMotorControl(0, 0);
+	rightMotorControl(0, 0);
+}
+
+void move(Direction direction) {
+	switch(direction) {
+	case LEFT:
+		leftMotorControl(50, 1); // make left move backwards
+		rightMotorControl(50, 0); // make right move forwards
+		break;
+	case RIGHT:
+		leftMotorControl(50, 0); // make left move forwards
+		rightMotorControl(50, 1); // make right move backwards
+		break;
+	case FORWARD:
+		leftMotorControl(50, 0); // make left move forwards
+		rightMotorControl(50, 0); // make right move forwards
+		break;
+	case BACKWARD:
+		leftMotorControl(50, 1); // make left move backwards
+		rightMotorControl(50, 1); // make right move backwards
+		break;
+	case FORWARD_LEFT:
+		leftMotorControl(50, 0); // make left move forwards
+		rightMotorControl(75, 0); // make right move forwards slightly faster
+		break;
+	case FORWARD_RIGHT:
+		leftMotorControl(75, 0); // make left move forwards slightly faster
+		rightMotorControl(50, 0); // make right move forwards 
+		break;
+	case BACKWARD_RIGHT:
+		leftMotorControl(75, 1); // make left move backwards slightly faster
+		rightMotorControl(50, 1); // make right move backwards 
+		break;
+	case BACKWARD_LEFT:
+		leftMotorControl(50, 1); // make left move backwards 
+		rightMotorControl(75, 1); // make right move backwards slightly faster
+		break;
+	default:
+		stop();
+		break;
+	}
+
+	delay(0xFFFF);
+	stop();
+}
+
+void UARTMotor(uint8_t info;)
+{
+	uint8_t info;
+
+	switch (info)
+	{ 
+	case 1:
+		move(FORWARD);
+		break;
+	case 2:
+		move(BACKWARD);
+		break;
+	case 3:
+		move(LEFT);
+		break;
+	case 4:
+		move(RIGHT);
+		break;
+	case 6:
+		move(FORWARD_LEFT);
+		break;
+	case 7:
+		move(FORWARD_RIGHT);
+		break;
+	case 8:
+		move(BACKWARD_LEFT);
+		break;
+	case 9:
+		move(BACKWARD_RIGHT);
+		break;
+	default:
+		break;
+	}
+}
+
 int main()
 {
 	initPWM();
@@ -138,6 +228,5 @@ int main()
 		delay(0xFFFFF);
 		delay(0xFFFFF);
 		
-	}
-		
+	}	
 }
