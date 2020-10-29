@@ -7,13 +7,13 @@ Section Cross References
     main.o(i.app_main) refers to rtx_evflags.o(.text.osEventFlagsNew) for osEventFlagsNew
     main.o(i.app_main) refers to main.o(.data) for led_flag
     main.o(i.blue_LED) refers to rtx_evflags.o(.text.osEventFlagsWait) for osEventFlagsWait
-    main.o(i.blue_LED) refers to rtx_evflags.o(.text.osEventFlagsClear) for osEventFlagsClear
     main.o(i.blue_LED) refers to main.o(i.LightLED) for LightLED
     main.o(i.blue_LED) refers to rtx_delay.o(.text.osDelay) for osDelay
     main.o(i.blue_LED) refers to main.o(i.OffLED) for OffLED
     main.o(i.blue_LED) refers to main.o(.data) for led_flag
     main.o(i.control_thread) refers to rtx_evflags.o(.text.osEventFlagsSet) for osEventFlagsSet
     main.o(i.control_thread) refers to rtx_delay.o(.text.osDelay) for osDelay
+    main.o(i.control_thread) refers to rtx_evflags.o(.text.osEventFlagsClear) for osEventFlagsClear
     main.o(i.control_thread) refers to main.o(.data) for led_flag
     main.o(i.green_LED) refers to rtx_evflags.o(.text.osEventFlagsWait) for osEventFlagsWait
     main.o(i.green_LED) refers to rtx_evflags.o(.text.osEventFlagsClear) for osEventFlagsClear
@@ -29,8 +29,6 @@ Section Cross References
     main.o(i.main) refers to rtx_thread.o(.text.osThreadNew) for osThreadNew
     main.o(i.main) refers to rtx_kernel.o(.text.osKernelStart) for osKernelStart
     main.o(i.main) refers to main.o(.data) for led_flag
-    main.o(i.main) refers to main.o(i.red_LED) for red_LED
-    main.o(i.main) refers to main.o(i.green_LED) for green_LED
     main.o(i.main) refers to main.o(i.blue_LED) for blue_LED
     main.o(i.main) refers to main.o(i.control_thread) for control_thread
     main.o(i.red_LED) refers to rtx_evflags.o(.text.osEventFlagsWait) for osEventFlagsWait
@@ -661,6 +659,8 @@ Removing Unused input sections from the image.
     Removing main.o(.revsh_text), (4 bytes).
     Removing main.o(i.app_main), (20 bytes).
     Removing main.o(i.delay), (20 bytes).
+    Removing main.o(i.green_LED), (64 bytes).
+    Removing main.o(i.red_LED), (64 bytes).
     Removing main.o(.constdata), (36 bytes).
     Removing rtx_lib.o(.rev16_text), (4 bytes).
     Removing rtx_lib.o(.revsh_text), (4 bytes).
@@ -1015,7 +1015,7 @@ Removing Unused input sections from the image.
     Removing rtx_msgqueue.o(.text.svcRtxMessageQueueDelete), (112 bytes).
     Removing rtx_msgqueue.o(.ARM.exidx.text.svcRtxMessageQueueDelete), (8 bytes).
 
-357 unused section(s) (total 8575 bytes) removed from the image.
+359 unused section(s) (total 8703 bytes) removed from the image.
 
 ==============================================================================
 
@@ -1028,21 +1028,21 @@ Image Symbol Table
     RESET                                    0x00000000   Section      192  startup_mkl25z4.o(RESET)
     ../clib/../cmprslib/zerorunl.c           0x00000000   Number         0  __dczerorl.o ABSOLUTE
     ../clib/microlib/division.c              0x00000000   Number         0  uidiv.o ABSOLUTE
+    ../clib/microlib/init/entry.s            0x00000000   Number         0  entry7a.o ABSOLUTE
+    ../clib/microlib/init/entry.s            0x00000000   Number         0  entry5.o ABSOLUTE
+    ../clib/microlib/init/entry.s            0x00000000   Number         0  entry.o ABSOLUTE
+    ../clib/microlib/init/entry.s            0x00000000   Number         0  entry11b.o ABSOLUTE
     ../clib/microlib/init/entry.s            0x00000000   Number         0  entry2.o ABSOLUTE
     ../clib/microlib/init/entry.s            0x00000000   Number         0  entry7b.o ABSOLUTE
-    ../clib/microlib/init/entry.s            0x00000000   Number         0  entry5.o ABSOLUTE
     ../clib/microlib/init/entry.s            0x00000000   Number         0  entry8a.o ABSOLUTE
-    ../clib/microlib/init/entry.s            0x00000000   Number         0  entry.o ABSOLUTE
     ../clib/microlib/init/entry.s            0x00000000   Number         0  entry8b.o ABSOLUTE
-    ../clib/microlib/init/entry.s            0x00000000   Number         0  entry7a.o ABSOLUTE
+    ../clib/microlib/init/entry.s            0x00000000   Number         0  entry9a.o ABSOLUTE
     ../clib/microlib/init/entry.s            0x00000000   Number         0  entry9b.o ABSOLUTE
     ../clib/microlib/init/entry.s            0x00000000   Number         0  entry10a.o ABSOLUTE
     ../clib/microlib/init/entry.s            0x00000000   Number         0  entry10b.o ABSOLUTE
-    ../clib/microlib/init/entry.s            0x00000000   Number         0  entry9a.o ABSOLUTE
     ../clib/microlib/init/entry.s            0x00000000   Number         0  entry11a.o ABSOLUTE
-    ../clib/microlib/init/entry.s            0x00000000   Number         0  entry11b.o ABSOLUTE
-    ../clib/microlib/string/memcpy.c         0x00000000   Number         0  memcpya.o ABSOLUTE
     ../clib/microlib/string/memcpy.c         0x00000000   Number         0  memcpyb.o ABSOLUTE
+    ../clib/microlib/string/memcpy.c         0x00000000   Number         0  memcpya.o ABSOLUTE
     ../clib/microlib/string/memset.c         0x00000000   Number         0  memseta.o ABSOLUTE
     ..\..\..\Source\ARM\irq_cm0.s            0x00000000   Number         0  irq_cm0.o ABSOLUTE
     C:\Users\User\AppData\Local\Arm\Packs\ARM\CMSIS\5.6.0\CMSIS\RTOS2\RTX\Source\rtx_lib.c 0x00000000   Number         0  rtx_lib.o ABSOLUTE
@@ -1257,21 +1257,19 @@ Image Symbol Table
     i.__scatterload_copy                     0x00001ba4   Section       14  handlers.o(i.__scatterload_copy)
     i.__scatterload_zeroinit                 0x00001bb2   Section       14  handlers.o(i.__scatterload_zeroinit)
     i.blue_LED                               0x00001bc0   Section        0  main.o(i.blue_LED)
-    i.control_thread                         0x00001c00   Section        0  main.o(i.control_thread)
-    i.green_LED                              0x00001c40   Section        0  main.o(i.green_LED)
-    i.main                                   0x00001c80   Section        0  main.o(i.main)
-    i.osRtxErrorNotify                       0x00001d0c   Section        0  rtx_config.o(i.osRtxErrorNotify)
-    i.osRtxIdleThread                        0x00001d2c   Section        0  rtx_config.o(i.osRtxIdleThread)
-    i.red_LED                                0x00001d30   Section        0  main.o(i.red_LED)
-    .constdata                               0x00001d70   Section      100  rtx_lib.o(.constdata)
-    os_idle_thread_attr                      0x00001d70   Data          36  rtx_lib.o(.constdata)
-    os_timer_thread_attr                     0x00001d94   Data          36  rtx_lib.o(.constdata)
-    os_timer_mq_attr                         0x00001db8   Data          24  rtx_lib.o(.constdata)
-    .rodata                                  0x00001dd4   Section      160  rtx_lib.o(.rodata)
-    __tagsym$$used                           0x00001dd4   Number         0  rtx_lib.o(.rodata)
-    __tagsym$$used                           0x00001e3c   Number         0  rtx_lib.o(.rodata)
-    [Anonymous Symbol]                       0x00001e74   Section        0  rtx_kernel.o(.rodata.str1.4)
-    .L.str                                   0x00001e74   Data          11  rtx_kernel.o(.rodata.str1.4)
+    i.control_thread                         0x00001c18   Section        0  main.o(i.control_thread)
+    i.main                                   0x00001c44   Section        0  main.o(i.main)
+    i.osRtxErrorNotify                       0x00001ca4   Section        0  rtx_config.o(i.osRtxErrorNotify)
+    i.osRtxIdleThread                        0x00001cc4   Section        0  rtx_config.o(i.osRtxIdleThread)
+    .constdata                               0x00001cc8   Section      100  rtx_lib.o(.constdata)
+    os_idle_thread_attr                      0x00001cc8   Data          36  rtx_lib.o(.constdata)
+    os_timer_thread_attr                     0x00001cec   Data          36  rtx_lib.o(.constdata)
+    os_timer_mq_attr                         0x00001d10   Data          24  rtx_lib.o(.constdata)
+    .rodata                                  0x00001d2c   Section      160  rtx_lib.o(.rodata)
+    __tagsym$$used                           0x00001d2c   Number         0  rtx_lib.o(.rodata)
+    __tagsym$$used                           0x00001d94   Number         0  rtx_lib.o(.rodata)
+    [Anonymous Symbol]                       0x00001dcc   Section        0  rtx_kernel.o(.rodata.str1.4)
+    .L.str                                   0x00001dcc   Data          11  rtx_kernel.o(.rodata.str1.4)
     .bss.os                                  0x1ffff000   Section     4160  rtx_lib.o(.bss.os)
     os_mem                                   0x1ffff000   Data        4096  rtx_lib.o(.bss.os)
     os_isr_queue                             0x20000000   Data          64  rtx_lib.o(.bss.os)
@@ -1427,18 +1425,16 @@ Image Symbol Table
     __ARM_common_switch8                     0x00001b89   Thumb Code    28  rtx_config.o(i.__ARM_common_switch8)
     __scatterload_copy                       0x00001ba5   Thumb Code    14  handlers.o(i.__scatterload_copy)
     __scatterload_zeroinit                   0x00001bb3   Thumb Code    14  handlers.o(i.__scatterload_zeroinit)
-    blue_LED                                 0x00001bc1   Thumb Code    58  main.o(i.blue_LED)
-    control_thread                           0x00001c01   Thumb Code    58  main.o(i.control_thread)
-    green_LED                                0x00001c41   Thumb Code    58  main.o(i.green_LED)
-    main                                     0x00001c81   Thumb Code   104  main.o(i.main)
-    osRtxErrorNotify                         0x00001d0d   Thumb Code    32  rtx_config.o(i.osRtxErrorNotify)
-    osRtxIdleThread                          0x00001d2d   Thumb Code     4  rtx_config.o(i.osRtxIdleThread)
-    red_LED                                  0x00001d31   Thumb Code    58  main.o(i.red_LED)
-    osRtxUserSVC                             0x00001dd0   Data           4  rtx_lib.o(.constdata)
-    osRtxConfig                              0x00001dd4   Data         104  rtx_lib.o(.rodata)
-    os_cb_sections                           0x00001e3c   Data          56  rtx_lib.o(.rodata)
-    Region$$Table$$Base                      0x00001e80   Number         0  anon$$obj.o(Region$$Table)
-    Region$$Table$$Limit                     0x00001ea0   Number         0  anon$$obj.o(Region$$Table)
+    blue_LED                                 0x00001bc1   Thumb Code    82  main.o(i.blue_LED)
+    control_thread                           0x00001c19   Thumb Code    36  main.o(i.control_thread)
+    main                                     0x00001c45   Thumb Code    76  main.o(i.main)
+    osRtxErrorNotify                         0x00001ca5   Thumb Code    32  rtx_config.o(i.osRtxErrorNotify)
+    osRtxIdleThread                          0x00001cc5   Thumb Code     4  rtx_config.o(i.osRtxIdleThread)
+    osRtxUserSVC                             0x00001d28   Data           4  rtx_lib.o(.constdata)
+    osRtxConfig                              0x00001d2c   Data         104  rtx_lib.o(.rodata)
+    os_cb_sections                           0x00001d94   Data          56  rtx_lib.o(.rodata)
+    Region$$Table$$Base                      0x00001dd8   Number         0  anon$$obj.o(Region$$Table)
+    Region$$Table$$Limit                     0x00001df8   Number         0  anon$$obj.o(Region$$Table)
     .bss.os.msgqueue.cb$$Base                0x20000040   Number         0  rtx_lib.o(.bss.os.msgqueue.cb)
     .bss.os.msgqueue.cb$$Limit               0x20000074   Number         0  rtx_lib.o(.bss.os.msgqueue.cb)
     .bss.os.thread.cb$$Base                  0x200000c4   Number         0  rtx_lib.o(.bss.os.thread.cb)
@@ -1461,9 +1457,9 @@ Memory Map of the image
 
   Image Entry point : 0x000000d5
 
-  Load Region LR_1 (Base: 0x00000000, Size: 0x000032b0, Max: 0xffffffff, ABSOLUTE, COMPRESSED[0x00001ed4])
+  Load Region LR_1 (Base: 0x00000000, Size: 0x00003208, Max: 0xffffffff, ABSOLUTE, COMPRESSED[0x00001e2c])
 
-    Execution Region ER_RO (Exec base: 0x00000000, Load base: 0x00000000, Size: 0x00001ea0, Max: 0xffffffff, ABSOLUTE)
+    Execution Region ER_RO (Exec base: 0x00000000, Load base: 0x00000000, Size: 0x00001df8, Max: 0xffffffff, ABSOLUTE)
 
     Exec Addr    Load Addr    Size         Type   Attr      Idx    E Section Name        Object
 
@@ -1566,21 +1562,19 @@ Memory Map of the image
     0x00001b88   0x00001b88   0x0000001c   Code   RO          170    i.__ARM_common_switch8  rtx_config.o
     0x00001ba4   0x00001ba4   0x0000000e   Code   RO          755    i.__scatterload_copy  mc_p.l(handlers.o)
     0x00001bb2   0x00001bb2   0x0000000e   Code   RO          757    i.__scatterload_zeroinit  mc_p.l(handlers.o)
-    0x00001bc0   0x00001bc0   0x00000040   Code   RO            7    i.blue_LED          main.o
-    0x00001c00   0x00001c00   0x00000040   Code   RO            8    i.control_thread    main.o
-    0x00001c40   0x00001c40   0x00000040   Code   RO           10    i.green_LED         main.o
-    0x00001c80   0x00001c80   0x0000008c   Code   RO           11    i.main              main.o
-    0x00001d0c   0x00001d0c   0x00000020   Code   RO          149    i.osRtxErrorNotify  rtx_config.o
-    0x00001d2c   0x00001d2c   0x00000004   Code   RO          150    i.osRtxIdleThread   rtx_config.o
-    0x00001d30   0x00001d30   0x00000040   Code   RO           12    i.red_LED           main.o
-    0x00001d70   0x00001d70   0x00000064   Data   RO          119    .constdata          rtx_lib.o
-    0x00001dd4   0x00001dd4   0x000000a0   Data   RO          121    .rodata             rtx_lib.o
-    0x00001e74   0x00001e74   0x0000000b   Data   RO          276    .rodata.str1.4      RTX_CM0.lib(rtx_kernel.o)
-    0x00001e7f   0x00001e7f   0x00000001   PAD
-    0x00001e80   0x00001e80   0x00000020   Data   RO          753    Region$$Table       anon$$obj.o
+    0x00001bc0   0x00001bc0   0x00000058   Code   RO            7    i.blue_LED          main.o
+    0x00001c18   0x00001c18   0x0000002c   Code   RO            8    i.control_thread    main.o
+    0x00001c44   0x00001c44   0x00000060   Code   RO           11    i.main              main.o
+    0x00001ca4   0x00001ca4   0x00000020   Code   RO          149    i.osRtxErrorNotify  rtx_config.o
+    0x00001cc4   0x00001cc4   0x00000004   Code   RO          150    i.osRtxIdleThread   rtx_config.o
+    0x00001cc8   0x00001cc8   0x00000064   Data   RO          119    .constdata          rtx_lib.o
+    0x00001d2c   0x00001d2c   0x000000a0   Data   RO          121    .rodata             rtx_lib.o
+    0x00001dcc   0x00001dcc   0x0000000b   Data   RO          276    .rodata.str1.4      RTX_CM0.lib(rtx_kernel.o)
+    0x00001dd7   0x00001dd7   0x00000001   PAD
+    0x00001dd8   0x00001dd8   0x00000020   Data   RO          753    Region$$Table       anon$$obj.o
 
 
-    Execution Region ER_RW (Exec base: 0x1ffff000, Load base: 0x00001ea0, Size: 0x00001410, Max: 0xffffffff, ABSOLUTE, COMPRESSED[0x00000034])
+    Execution Region ER_RW (Exec base: 0x1ffff000, Load base: 0x00001df8, Size: 0x00001410, Max: 0xffffffff, ABSOLUTE, COMPRESSED[0x00000034])
 
     Exec Addr    Load Addr    Size         Type   Attr      Idx    E Section Name        Object
 
@@ -1595,12 +1589,12 @@ Memory Map of the image
     0x2000036c   COMPRESSED   0x000000a4   Data   RW          277    .data.os            RTX_CM0.lib(rtx_kernel.o)
 
 
-    Execution Region ER_ZI (Exec base: 0x20000410, Load base: 0x00001ed4, Size: 0x00000108, Max: 0xffffffff, ABSOLUTE)
+    Execution Region ER_ZI (Exec base: 0x20000410, Load base: 0x00001e2c, Size: 0x00000108, Max: 0xffffffff, ABSOLUTE)
 
     Exec Addr    Load Addr    Size         Type   Attr      Idx    E Section Name        Object
 
     0x20000410        -       0x00000001   Zero   RW          660    .bss.PendST         RTX_CM0.lib(os_systick.o)
-    0x20000411   0x00001ed4   0x00000007   PAD
+    0x20000411   0x00001e2c   0x00000007   PAD
     0x20000418        -       0x00000100   Zero   RW          179    STACK               startup_mkl25z4.o
 
 
@@ -1611,14 +1605,14 @@ Image component sizes
 
       Code (inc. data)   RO Data    RW Data    ZI Data      Debug   Object Name
 
-       688         88          0         24          0      13239   main.o
+       520         62          0         24          0      12357   main.o
         64          8          0          0          0       1145   rtx_config.o
          0          0        260       4940          0       9178   rtx_lib.o
         56         30        192          0        256        968   startup_mkl25z4.o
        412         42          0          4          0       1671   system_mkl25z4.o
 
     ----------------------------------------------------------------------
-      1220        168        484       4972        256      26201   Object Totals
+      1052        142        484       4972        256      25319   Object Totals
          0          0         32          0          0          0   (incl. Generated)
          0          0          0          4          0          0   (incl. Padding)
 
@@ -1674,15 +1668,15 @@ Image component sizes
 
       Code (inc. data)   RO Data    RW Data    ZI Data      Debug   
 
-      7344        478        496       5136        264     149909   Grand Totals
-      7344        478        496         52        264     149909   ELF Image Totals (compressed)
-      7344        478        496         52          0          0   ROM Totals
+      7176        452        496       5136        264     149115   Grand Totals
+      7176        452        496         52        264     149115   ELF Image Totals (compressed)
+      7176        452        496         52          0          0   ROM Totals
 
 ==============================================================================
 
-    Total RO  Size (Code + RO Data)                 7840 (   7.66kB)
+    Total RO  Size (Code + RO Data)                 7672 (   7.49kB)
     Total RW  Size (RW Data + ZI Data)              5400 (   5.27kB)
-    Total ROM Size (Code + RO Data + RW Data)       7892 (   7.71kB)
+    Total ROM Size (Code + RO Data + RW Data)       7724 (   7.54kB)
 
 ==============================================================================
 

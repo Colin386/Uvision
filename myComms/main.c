@@ -150,12 +150,20 @@ void blue_LED (void *argument) {
 		osDelay(1000);
 		OffLED(BLUE);
 		osDelay(1000);*/
-		osEventFlagsWait(led_flag, 0x0004, osFlagsWaitAll, osWaitForever);
-		osEventFlagsClear(led_flag, 0x0004);
-		LightLED(BLUE);
-		osDelay(1000);
-		OffLED(BLUE);
-		osDelay(1000);
+		uint32_t test = osEventFlagsWait(led_flag, 0x0004, osFlagsWaitAny | osFlagsNoClear, 1);
+		//osEventFlagsClear(led_flag, 0x0004);
+		if (test == 0x04) {
+			LightLED(BLUE);
+			osDelay(1000);
+			OffLED(BLUE);
+			osDelay(1000);
+		} else {
+			LightLED(RED);
+			osDelay(1000);
+			OffLED(RED);
+			osDelay(1000);
+		}
+		
 	}
 }
 
@@ -170,12 +178,14 @@ void control_thread (void *argument) {
 		osThreadFlagsSet(blueLED_Id, 0x0000001);
 		osDelay(1000);*/ 
 		
-		osEventFlagsSet(led_flag, 0x00000001);
-		osDelay(1000);
-		osEventFlagsSet(led_flag, 0x00000002);
-		osDelay(1000);
+		//osEventFlagsSet(led_flag, 0x00000001);
+		//osDelay(1000);
+		//osEventFlagsSet(led_flag, 0x00000002);
+		//osDelay(1000);
 		osEventFlagsSet(led_flag, 0x00000004);
-		osDelay(1000);
+		osDelay(10000);
+		osEventFlagsClear(led_flag, 0x00000004);
+		osDelay(10000);
 	}	
 }
 const osThreadAttr_t thread_attr = {
@@ -199,8 +209,8 @@ int main (void) {
 	led_flag = osEventFlagsNew(NULL);
 	
 	
-  redLED_Id = osThreadNew(red_LED, NULL, NULL);    // Create application main thread
-	greenLED_Id = osThreadNew(green_LED, NULL, NULL);
+  //redLED_Id = osThreadNew(red_LED, NULL, NULL);    // Create application main thread
+	//greenLED_Id = osThreadNew(green_LED, NULL, NULL);
 	blueLED_Id = osThreadNew(blue_LED, NULL, NULL);
 	control_Id = osThreadNew(control_thread, NULL, NULL);
 	//osThreadNew(blue_LED, NULL, NULL);
