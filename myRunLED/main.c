@@ -47,20 +47,21 @@ void PORTD_IRQHandler()
 void movingLED (void *argument) {
 	
 	//only set to zero bits in pos 1, 2, 3
-	uint32_t reset_LED = 0xFFFFFFF1;
-	uint32_t notAtMax = 0x0000000E;
-	PTB->PDOR &= reset_LED;
+	uint32_t reset_LED = 0x00000008;
+	uint32_t AtMax = 0x00000400;
+	PTC->PDOR = reset_LED;
 	
 	for (;;) {
-		uint32_t regState = PTB->PDOR;
+		uint32_t regState = PTC->PDOR;
 		
-		if ((~regState) & notAtMax) { //only if bits are at 7 will this cause it to be false
-			PTB->PDOR += 2; //add two to avoid the first bit
+		if ((regState) == AtMax) { //only if bits are at 7 will this cause it to be false
+			PTC->PDOR = reset_LED; //add eight to avoid the first three bit
 		} else {
-			PTB->PDOR &= reset_LED;
+			PTC->PDOR = PTC->PDOR << 1;
 		}
 		
-		osDelay(1000);
+		osDelay(500);
+		
 	}
 }
 /*----------------------------------------------------------------------------
@@ -76,7 +77,7 @@ int main (void) {
  
   // System Initialization
   SystemCoreClockUpdate();
-  // ...
+  initLEDGPIO();
  
   osKernelInitialize();                 // Initialize CMSIS-RTOS
   osThreadNew(app_main, NULL, NULL);    // Create application main thread
@@ -84,3 +85,4 @@ int main (void) {
   osKernelStart();                      // Start thread execution
   for (;;) {}
 }
+

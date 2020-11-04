@@ -2,21 +2,39 @@
 
 void initLEDGPIO(void) {
 	
-	//enable port B
-	SIM->SCGC5 |= SIM_SCGC5_PORTB_MASK;
+	//enable port C
+	SIM->SCGC5 |= SIM_SCGC5_PORTC_MASK;
 	
-	//configure MUX settings to make B0, B1, B2 GPIO pins
+	//configure MUX settings to make C3 - C11 GPIO
 	
-	PORTB->PCR[1] &= ~PORT_PCR_MUX_MASK;
-	PORTB->PCR[1] |= PORT_PCR_MUX(1);
+	PORTC->PCR[3] &= ~PORT_PCR_MUX_MASK;
+	PORTC->PCR[3] |= PORT_PCR_MUX(1);
 	
-	PORTB->PCR[2] &= PORT_PCR_MUX_MASK;
-	PORTB->PCR[2] |= PORT_PCR_MUX(1);
+	PORTC->PCR[4] &= PORT_PCR_MUX_MASK;
+	PORTC->PCR[4] |= PORT_PCR_MUX(1);
 	
-	PORTB->PCR[3] &= PORT_PCR_MUX_MASK;
-	PORTB->PCR[3] |= PORT_PCR_MUX(1);
+	PORTC->PCR[5] &= PORT_PCR_MUX_MASK;
+	PORTC->PCR[5] |= PORT_PCR_MUX(1);
+	
+	PORTC->PCR[6] &= ~PORT_PCR_MUX_MASK;
+	PORTC->PCR[6] |= PORT_PCR_MUX(1);
+	
+	PORTC->PCR[7] &= PORT_PCR_MUX_MASK;
+	PORTC->PCR[7] |= PORT_PCR_MUX(1);
+	
+	PORTC->PCR[8] &= PORT_PCR_MUX_MASK;
+	PORTC->PCR[8] |= PORT_PCR_MUX(1);
+	
+	PORTC->PCR[9] &= ~PORT_PCR_MUX_MASK;
+	PORTC->PCR[9] |= PORT_PCR_MUX(1);
+	
+	PORTC->PCR[10] &= PORT_PCR_MUX_MASK;
+	PORTC->PCR[10] |= PORT_PCR_MUX(1);
+	
+	PORTC->PCR[11] &= PORT_PCR_MUX_MASK;
+	PORTC->PCR[11] |= PORT_PCR_MUX(1);
 	
 	//Set data direction to output
 	
-	PTB->PDDR |= (MASK(0) | MASK(1) | MASK(2));
+	PTC->PDDR |= (MASK(3) | MASK(4) | MASK(5)| MASK(6) | MASK(7) | MASK(8) | MASK(9) | MASK(10) | MASK(11) );
 }
