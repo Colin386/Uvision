@@ -1,0 +1,40 @@
+#include "runningLED.h"
+
+void initLEDGPIO(void) {
+	
+	//enable port C
+	SIM->SCGC5 |= SIM_SCGC5_PORTC_MASK;
+	
+	//configure MUX settings to make C3 - C11 GPIO
+	
+	PORTC->PCR[3] &= ~PORT_PCR_MUX_MASK;
+	PORTC->PCR[3] |= PORT_PCR_MUX(1);
+	
+	PORTC->PCR[4] &= PORT_PCR_MUX_MASK;
+	PORTC->PCR[4] |= PORT_PCR_MUX(1);
+	
+	PORTC->PCR[5] &= PORT_PCR_MUX_MASK;
+	PORTC->PCR[5] |= PORT_PCR_MUX(1);
+	
+	PORTC->PCR[6] &= ~PORT_PCR_MUX_MASK;
+	PORTC->PCR[6] |= PORT_PCR_MUX(1);
+	
+	PORTC->PCR[7] &= PORT_PCR_MUX_MASK;
+	PORTC->PCR[7] |= PORT_PCR_MUX(1);
+	
+	PORTC->PCR[8] &= PORT_PCR_MUX_MASK;
+	PORTC->PCR[8] |= PORT_PCR_MUX(1);
+	
+	PORTC->PCR[9] &= ~PORT_PCR_MUX_MASK;
+	PORTC->PCR[9] |= PORT_PCR_MUX(1);
+	
+	PORTC->PCR[10] &= PORT_PCR_MUX_MASK;
+	PORTC->PCR[10] |= PORT_PCR_MUX(1);
+	
+	PORTC->PCR[11] &= PORT_PCR_MUX_MASK;
+	PORTC->PCR[11] |= PORT_PCR_MUX(1);
+	
+	//Set data direction to output
+	
+	PTC->PDDR |= (MASK(3) | MASK(4) | MASK(5)| MASK(6) | MASK(7) | MASK(8) | MASK(9) | MASK(10) | MASK(11) );
+}
