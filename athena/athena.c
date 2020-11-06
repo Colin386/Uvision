@@ -297,7 +297,7 @@ void movingLED (void *argument) {
 		osDelay(500);
 		}
 		
-		else {
+		else { //stationery LED pattern
 			PTC->PDOR = AllOn;
 		}
 		
