@@ -277,9 +277,14 @@ void movingLED (void *argument) {
 	
 	//only set to zero bits in pos 1, 2, 3
 	uint32_t reset_LED = 0x00000008;
+	uint32_t LED_reg_to_zero = 0xFFFFF807;
 	uint32_t AtMax = 0x00000400;
 	uint32_t AllOn = 0x000007F8;
+	uint32_t back_LED = 0x00000800;
+	
 	PTC->PDOR = reset_LED;
+	uint32_t amount_to_increment = 0;
+	
 	
 	for (;;) {
 		
@@ -288,17 +293,32 @@ void movingLED (void *argument) {
 		if (status == 0x00000002) { //moving running led
 			uint32_t regState = PTC->PDOR;
 		
-			if ((regState) == AtMax || regState == AllOn) { //only if bits are at 7 will this cause it to be false
-				PTC->PDOR = reset_LED; //add eight to avoid the first three bit
+			if (regState &= AtMax) { //triggers when the 10 bit is positive. This scene occurs when counter count all the way up or if all led are on
+				
+				PTC->PDOR &= LED_reg_to_zero;
+				PTC->PDOR |= reset_LED;
+				
 			} else {
 				PTC->PDOR = PTC->PDOR << 1;
+				
+				amount_to_increment = PTC->PDOR & (~LED_reg_to_zero); //get only the bits responsible for the front led register
+				amount_to_increment = amount_to_increment >> 3;
+				PTC->PDOR += amount_to_increment;
 			}
+			
+			//blink the front led at a fixed timing
+			
 		
 		osDelay(500);
 		}
 		
 		else { //stationery LED pattern
-			PTC->PDOR = AllOn;
+			PTC->PDOR |= AllOn;
+			PTC->PDOR ^= back_LED;
+			
+			osDelay(250);
+			
+			
 		}
 		
 		
