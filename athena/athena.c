@@ -299,14 +299,13 @@ void movingLED (void *argument) {
 				PTC->PDOR |= reset_LED;
 				
 			} else {
-				PTC->PDOR = PTC->PDOR << 1;
 				
 				amount_to_increment = PTC->PDOR & (~LED_reg_to_zero); //get only the bits responsible for the front led register
-				amount_to_increment = amount_to_increment >> 3;
 				PTC->PDOR += amount_to_increment;
 			}
 			
 			//blink the front led at a fixed timing
+			PTC->PDOR ^= back_LED;
 			
 		
 		osDelay(500);
