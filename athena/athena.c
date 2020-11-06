@@ -7,6 +7,7 @@
 #include "cmsis_os2.h"
 #include "MKL25Z4.h"                    // Device header
 #include "runningLED.h"
+#include "notes.h"
 
 #define MASK(x) (1 << (x))
 
@@ -25,7 +26,23 @@
 #define TRUE 1
 #define FALSE 0
 
-osMessageQueueId_t motorMsg;
+#define AUDIO 0
+
+#define POWER 80
+#define LOWPOWER 20
+
+int sheet1[] = {D6,C6,D6,E6,D6,A5,C6,C6,C6,A6,Gb6,D6,C6,D6,E6,D6,A5,B5,C6,D6,E6,D6,C6,G5,A5,C6,D6,E6,D6,A5,C6,G6,G6,A6,Gb6,D6,E6,F6,G6,A6,G6,F6,E6,C6,A5,A6,D7,E7,D7};
+int count1[] = {3 ,1 ,1 ,1 ,2 ,2 ,2 ,2 ,2 ,2 ,6  ,3 ,1 ,1 ,1 ,2 ,2 ,2 ,2 ,2 ,2 ,3 ,2 ,2 ,2 ,1 ,1 ,1 ,2 ,2 ,2 ,4 ,1 ,1 ,4  ,1 ,1 ,2 ,2 ,2 ,1 ,1 ,2 ,2 ,3 ,1 ,1 ,1 ,10};
+int length1 = sizeof(sheet1)/sizeof(int);
+ 
+int sheet2[] = {Eb5,C6,Ab5,Bb5,C6,Bb5,Ab5,F5,Eb5,Eb5,C6,Ab5,Bb5,C6,Bb5,Ab5,F5,Ab5,Ab5,Bb5,C6,Bb5,Ab5,F5,Ab5,Ab5};
+int count2[] = {8  ,6 ,2  ,2  ,2 ,2  ,2  ,4 ,4  ,8  ,6 ,2  ,2  ,2 ,2  ,2  ,4 ,4  ,14 ,2  ,2 ,2  ,2  ,4 ,4  ,20};
+int length2 = sizeof(sheet2)/sizeof(int);
+ 
+int sheet3[] = {F5,C6,B5,C6,F6,C6,B5,C6,F5,Db6,C6,Db6,F6,Db6,C6,Db6,F5,D6,Db6,D6,F6,D6,Db6,D6,F5,Db6,C6,Db6,F6,Db6,C6,Db6,F5,C6,Bb5,C6,F6,C6,Bb5,C6,F5,C6,Bb5,C6,F6,C6,Bb5,C6,F5,D6,Db6,D6,F6,D6,Db6,D6,F5,Db6,C6,Db6,F6,Db6,C6,Db6,F5,C6,Bb5,C6,F6,C6,Bb5,C6,F5,C6,Bb5,C6,F6,C6,Bb5,C6};
+int length3 = sizeof(sheet3)/sizeof(int);
+
+osMessageQueueId_t motorMsg, audioMsg;
 
 uint8_t RxData;
 
@@ -121,6 +138,28 @@ void initPWM(void)
 	
 }
 
+void initAudio(void)
+{
+	SIM_SCGC5 |= SIM_SCGC5_PORTB_MASK;
+	
+	PORTB->PCR[AUDIO] &= ~PORT_PCR_MUX_MASK;
+	PORTB->PCR[AUDIO] |= PORT_PCR_MUX(3);
+	
+	SIM_SCGC6 |= SIM_SCGC6_TPM1_MASK;
+	
+	//TPM clock source select - MCGFLLCLK
+	SIM_SOPT2 &= ~SIM_SOPT2_TPMSRC_MASK;
+	SIM_SOPT2 |= SIM_SOPT2_TPMSRC(1);
+	
+	TPM1->SC &= ~((TPM_SC_CMOD_MASK) | (TPM_SC_PS_MASK));
+	TPM1->SC |= (TPM_SC_CMOD(1) | TPM_SC_PS(7)); //clock mode and prescalar
+	TPM1->SC &= ~TPM_SC_CPWMS_MASK; //center-aligned PWM select
+	
+	//mode, edge, and level selection - edge-aligned PWM High true pulse
+	TPM1_C0SC &= ~((TPM_CnSC_ELSA_MASK) | (TPM_CnSC_ELSB_MASK) | (TPM_CnSC_MSA_MASK) | (TPM_CnSC_MSB_MASK));
+	TPM1_C0SC |= (TPM_CnSC_ELSB(1) | TPM_CnSC_MSB(1));
+}
+
 void setDutyCycle(float percent, int channel)
 {
 	float multiple = percent/100.0;
@@ -191,40 +230,48 @@ void move(enum Direction direction) {
 	osEventFlagsSet(led_flag, 0x00000002);
 	switch(direction) {
 	case LEFT:
-		leftMotorControl(50, 1); // make left move backwards
-		rightMotorControl(50, 0); // make right move forwards
+		leftMotorControl(POWER, 1); // make left move backwards
+		rightMotorControl(POWER, 0); // make right move forwards
 		break;
 	case RIGHT:
-		leftMotorControl(50, 0); // make left move forwards
-		rightMotorControl(50, 1); // make right move backwards
+		leftMotorControl(POWER, 0); // make left move forwards
+		rightMotorControl(POWER, 1); // make right move backwards
 		break;
 	case FORWARD:
-		leftMotorControl(50, 0); // make left move forwards
-		rightMotorControl(50, 0); // make right move forwards
+		leftMotorControl(POWER, 0); // make left move forwards
+		rightMotorControl(POWER, 0); // make right move forwards
 		break;
 	case BACKWARD:
-		leftMotorControl(50, 1); // make left move backwards
-		rightMotorControl(50, 1); // make right move backwards
+		leftMotorControl(POWER, 1); // make left move backwards
+		rightMotorControl(POWER, 1); // make right move backwards
 		break;
 	case FORWARD_LEFT:
-		leftMotorControl(50, 0); // make left move forwards
-		rightMotorControl(75, 0); // make right move forwards slightly faster
+		leftMotorControl(LOWPOWER, 0); // make left move forwards
+		rightMotorControl(POWER, 0); // make right move forwards slightly faster
 		break;
 	case FORWARD_RIGHT:
-		leftMotorControl(75, 0); // make left move forwards slightly faster
-		rightMotorControl(50, 0); // make right move forwards 
+		leftMotorControl(POWER, 0); // make left move forwards slightly faster
+		rightMotorControl(LOWPOWER, 0); // make right move forwards 
 		break;
 	case BACKWARD_RIGHT:
-		leftMotorControl(75, 1); // make left move backwards slightly faster
-		rightMotorControl(50, 1); // make right move backwards 
+		leftMotorControl(POWER, 1); // make left move backwards slightly faster
+		rightMotorControl(LOWPOWER, 1); // make right move backwards 
 		break;
 	case BACKWARD_LEFT:
-		leftMotorControl(50, 1); // make left move backwards 
-		rightMotorControl(75, 1); // make right move backwards slightly faster
+		leftMotorControl(LOWPOWER, 1); // make left move backwards 
+		rightMotorControl(POWER, 1); // make right move backwards slightly faster
 		break;
-	}
+  }
 }
 
+void playNote(int beat, int freq, int count)
+{
+	TPM1->MOD = CLOCK_STEP/freq;
+	TPM1_C0V = CLOCK_STEP/(2*freq);
+	osDelay(beat);
+	TPM1_C0V = 0;
+	osDelay(beat*(count-1) + 1);
+}
  
 /*----------------------------------------------------------------------------
  * Application main thread
@@ -259,6 +306,10 @@ void tMotorControl (void *argument) {
 		case 9:
 			move(BACKWARD_RIGHT);
 			break;
+		case 10:
+			osEventFlagsSet(led_flag, 0x00000004);
+			osEventFlagsClear(led_flag, 0x00000003);
+			break;
 		default:
 			stop();
 		}
@@ -267,9 +318,62 @@ void tMotorControl (void *argument) {
 	}
 }
 
+void tAudio(void *argument)
+{
+	//play startup tune
+	playNote(200, D5, 2);
+	playNote(200, D5, 2);
+	playNote(200, Db5, 2);
+	playNote(200, Db5, 2);
+	playNote(200, E5, 2);
+	playNote(200, E5, 2);
+	playNote(200, Eb5, 2);
+	playNote(200, Eb5, 2);
+	osDelay(500);
+	int tune = 1;
+	int i = 0;
+	int j = 0;
+	int k = 0;
+	for(;;)
+	{
+		osMessageQueueGet(audioMsg, &tune, NULL, 0);		
+		switch(tune)
+		{
+		case 1:
+			playNote(250, sheet1[i], count1[i]);
+			i = (i >= length1-1) ? 0 : i+1;
+			j = 0;
+			k = 0;
+			break;
+		case 2:
+			playNote(125, sheet2[j], count2[j]);
+			j = (j >= length2-1) ? 0 : j+1;
+			i = 0;
+			k = 0;
+			break;
+		case 3:
+			playNote(100, sheet3[k], 1);
+			k = (k >= length3-1) ? 0 : k+1;
+			i = 0;
+			j = 0;
+			break;
+		}
+	}
+}
+
 void tBrain(void *argument) {
+	int tune = 1;
+	uint8_t data;
 	for(;;) {
-		osMessageQueuePut(motorMsg, &RxData, NULL, 0);
+		if (data != RxData) {
+			data = RxData;
+			if (data != 5) {
+				osMessageQueuePut(motorMsg, &data, NULL, 0);
+			} else {
+				tune = (tune == 3) ? 1 : tune+1;
+				osMessageQueuePut(audioMsg, &tune, NULL, 0);
+			}
+		}
 	}
 }
 
@@ -311,13 +415,26 @@ void movingLED (void *argument) {
 		osDelay(500);
 		}
 		
-		else { //stationery LED pattern
+		else if (status==0x00000001){ //stationery LED pattern
 			PTC->PDOR |= AllOn;
 			PTC->PDOR ^= back_LED;
 			
 			osDelay(250);
 			
 			
+		} else {
+			PTC->PDOR |= AllOn;
+			osDelay(250);
+			PTC->PDOR &= (~AllOn);
+			osDelay(250);
+			PTC->PDOR |= AllOn;
+			osDelay(250);
+			PTC->PDOR &= (~AllOn);
+			osDelay(250);
+			PTC->PDOR |= AllOn;
+			osEventFlagsClear(led_flag, 0x00000004);
+			osEventFlagsSet(led_flag, 0x00000001);
+			RxData = 0;
 		}
 		
 		
@@ -329,12 +446,15 @@ void movingLED (void *argument) {
 int main (void) {
 		// System Initialization
 		initPWM();
+	  initAudio();
 		initLEDGPIO();
 		initUART2(BAUD_RATE);
 	
 		osKernelInitialize();                 // Initialize CMSIS-RTOS
-		motorMsg = osMessageQueueNew(2, sizeof(uint8_t), NULL);
+		motorMsg = osMessageQueueNew(10, sizeof(uint8_t), NULL);
+	  audioMsg = osMessageQueueNew(10, sizeof(int), NULL);
 		osThreadNew(tMotorControl, NULL,NULL);
+	  osThreadNew(tAudio, NULL, NULL);
 		osThreadNew(tBrain, NULL, NULL);
 		osThreadNew(movingLED, NULL, NULL);
 		led_flag = osEventFlagsNew(NULL);

@@ -397,6 +397,11 @@
               <FileType>1</FileType>
               <FilePath>.\runningLED.c</FilePath>
             </File>
+            <File>
+              <FileName>notes.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\notes.h</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

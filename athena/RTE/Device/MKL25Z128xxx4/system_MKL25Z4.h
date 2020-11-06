@@ -170,6 +170,7 @@ extern "C" {
 /* #undef FAST_TRIM_ADDRESS */                             /* Fast oscillator not trimmed. Commented out for MISRA compliance. */
 /* #undef FAST_FINE_TRIM_ADDRESS */                        /* Fast oscillator not trimmed. Commented out for MISRA compliance. */
 
+#define CLOCK_SETUP 1
 #ifdef CLOCK_SETUP
 #if (CLOCK_SETUP == 0)
   #define DEFAULT_SYSTEM_CLOCK         20971520u           /* Default System clock value */

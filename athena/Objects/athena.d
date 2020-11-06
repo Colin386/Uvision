@@ -12,3 +12,4 @@
 .\objects\athena.o: C:\Users\User\AppData\Local\Arm\Packs\Keil\Kinetis_KLxx_DFP\1.15.0\Device\Include\MKL25Z4.h
 .\objects\athena.o: runningLED.h
 .\objects\athena.o: C:\Users\User\AppData\Local\Arm\Packs\Keil\Kinetis_KLxx_DFP\1.15.0\Device\Include\MKL25Z4.h
+.\objects\athena.o: notes.h
