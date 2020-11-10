@@ -427,6 +427,12 @@ void movingLED (void *argument) {
 	}
 }
 
+/*have a forward blinking and a backward always on thread perhaps.
+When the bot moves, unflag the stationary, flag the blinking
+When the bot blutooth connect, unflag stationary, flag the blinking. Run the blink then unflag itself and flag stationery
+When the bot stationery, flag the stationery unflag the blinking
+Do all of this in motor control
+*/
 
 
 int main (void) {
