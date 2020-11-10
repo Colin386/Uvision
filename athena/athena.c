@@ -29,7 +29,7 @@
 #define AUDIO 0
 
 #define POWER 100
-#define LOWPOWER 10
+#define LOWPOWER 0
 
 int sheet1[] = {Db5,Ab5,Ab5,Db6,B5,Db6,B5,Ab5,Gb5,Ab5,Db5,B4,Db5,Ab5,Ab5,E5,Eb5,Eb5,E5,Eb5,Db5,B4,Db5,E5,Eb5,Db5,Ab5,Ab5,Db6,B5,Ab5,Ab5,B5,Db6,Ab5,Ab5,Gb5,E5,Db5,Db5,B4,Eb5,B4,Eb5,E5,Db5,Db5,Ab5,Ab5,Db6,B5,Ab5,Ab5,Gb5,E5,E5,Gb5,Ab5,Db5,Db5,Ab5,Db5,Db5,Db6,B5,Ab5,Ab5,Gb5,E5,E5,B4,Db5,Db5,Ab5,Ab5,Db6,B5,Ab5,Ab5,Gb5,E5,E5,Gb5,Ab5,Db5,Db5,Ab5,Db5,Db5,E5,Db5,B4,Ab5,E5,Ab5,B4,Db5};
 int count1[] = {4  ,4  ,4  ,4  ,2 ,1  ,1 ,2  ,2  ,4  ,2  ,2 ,4  ,4  ,4  ,4 ,2  ,1  ,1 ,1  ,1  ,2 ,4  ,2 ,2  ,4  ,4  ,4  ,4  ,2 ,1  ,1  ,2 ,2  ,4  ,2  ,2  ,4 ,4  ,4  ,4 ,2  ,2 ,2  ,2 ,8  ,2  ,2  ,2  ,2  ,2 ,2  ,4  ,2  ,2 ,2 ,2  ,2  ,2  ,2  ,2  ,2  ,2  ,2  ,2 ,2  ,4  ,2  ,2 ,2 ,2 ,8  ,2  ,2  ,2  ,2  ,2 ,2  ,4  ,2  ,2 ,2 ,2  ,2  ,2  ,4  ,2  ,2  ,2  ,2 ,4  ,4 ,2  ,2 ,2  ,2 ,8};
@@ -38,9 +38,7 @@ int length1 = sizeof(sheet1)/sizeof(int);
 int sheet2[] = {F5,C6,B5,C6,F6,C6,B5,C6,F5,Db6,C6,Db6,F6,Db6,C6,Db6,F5,D6,Db6,D6,F6,D6,Db6,D6,F5,Db6,C6,Db6,F6,Db6,C6,Db6,F5,C6,Bb5,C6,F6,C6,Bb5,C6,F5,C6,Bb5,C6,F6,C6,Bb5,C6,F5,D6,Db6,D6,F6,D6,Db6,D6,F5,Db6,C6,Db6,F6,Db6,C6,Db6,F5,C6,Bb5,C6,F6,C6,Bb5,C6,F5,C6,Bb5,C6,F6,C6,Bb5,C6};
 int length2 = sizeof(sheet2)/sizeof(int);
 
-osMessageQueueId_t motorMsg, audioMsg;
-
-uint8_t RxData;
+osMessageQueueId_t brainMsg, motorMsg, audioMsg;
 
 osEventFlagsId_t led_flag;
 
@@ -87,7 +85,9 @@ void UART2_IRQHandler(void) {
 	NVIC_ClearPendingIRQ(UART2_IRQn);
 	if (UART2->S1 & UART_S1_RDRF_MASK) {
 		//Character receieved
+		uint8_t RxData;
 		RxData = UART2->D;
+		osMessageQueuePut(brainMsg, &RxData, NULL, 0);
 	}
 }
 
@@ -303,8 +303,6 @@ void tMotorControl (void *argument) {
 			move(BACKWARD_RIGHT);
 			break;
 		case 10:
-			osEventFlagsSet(led_flag, 0x00000004);
-			osEventFlagsClear(led_flag, 0x00000003);
 			break;
 		default:
 			stop();
@@ -350,18 +348,18 @@ void tBrain(void *argument) {
 	int tune = 1;
 	uint8_t data;
 	for(;;) {
-		if (data != RxData) {
-			data = RxData;
-			if (data != 5) {
-				osMessageQueuePut(motorMsg, &data, NULL, 0);
-				if (data == 10) {
-					tune = 0;
-					osMessageQueuePut(audioMsg, &tune, NULL, 0);
-				}
-		  } else {
-				tune = (tune == 2) ? 1 : tune+1;
+		osMessageQueueGet(brainMsg, &data, NULL, osWaitForever);
+		if (data != 5) {
+			osMessageQueuePut(motorMsg, &data, NULL, 0);
+			if (data == 10) {
+				tune = 0;
 				osMessageQueuePut(audioMsg, &tune, NULL, 0);
+				osEventFlagsSet(led_flag, 0x00000004);
+				osEventFlagsClear(led_flag, 0x00000003);
 			}
+		} else {
+			tune = (tune == 2) ? 1 : tune+1;
+			osMessageQueuePut(audioMsg, &tune, NULL, 0);
 		}
 	}
 }
@@ -423,7 +421,6 @@ void movingLED (void *argument) {
 			PTC->PDOR |= AllOn;
 			osEventFlagsClear(led_flag, 0x00000004);
 			osEventFlagsSet(led_flag, 0x00000001);
-			RxData = 0;
 		}
 		
 		
@@ -440,6 +437,7 @@ int main (void) {
 		initUART2(BAUD_RATE);
 	
 		osKernelInitialize();                 // Initialize CMSIS-RTOS
+		brainMsg = osMessageQueueNew(10, sizeof(uint8_t), NULL);
 		motorMsg = osMessageQueueNew(10, sizeof(uint8_t), NULL);
 	  audioMsg = osMessageQueueNew(10, sizeof(int), NULL);
 		osThreadNew(tMotorControl, NULL,NULL);

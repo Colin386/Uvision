@@ -3,7 +3,7 @@
 <title>Static Call Graph - [.\Objects\Athena.axf]</title></head>
 <body><HR>
 <H1>Static Call Graph for image .\Objects\Athena.axf</H1><HR>
-<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5060750: Last Updated: Tue Nov 10 17:37:09 2020
+<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5060750: Last Updated: Tue Nov 10 17:57:02 2020
 <BR><P>
 <H3>Maximum Stack Usage =        120 bytes + Unknown(Cycles, Untraceable Function Pointers)</H3><H3>
 Call chain for Maximum Stack Depth:</H3>
@@ -429,7 +429,7 @@ Global Symbols
 </UL>
 <BR>[Calls]<UL><LI><a href="#[2b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;svcRtxEventFlagsClear
 </UL>
-<BR>[Called By]<UL><LI><a href="#[3e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;tMotorControl
+<BR>[Called By]<UL><LI><a href="#[40]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;tBrain
 <LI><a href="#[97]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;stop
 <LI><a href="#[41]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;movingLED
 <LI><a href="#[8e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;move
@@ -452,7 +452,7 @@ Global Symbols
 </UL>
 <BR>[Calls]<UL><LI><a href="#[5b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;osRtxPostProcess
 </UL>
-<BR>[Called By]<UL><LI><a href="#[3e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;tMotorControl
+<BR>[Called By]<UL><LI><a href="#[40]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;tBrain
 <LI><a href="#[97]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;stop
 <LI><a href="#[41]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;movingLED
 <LI><a href="#[8e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;move
@@ -480,6 +480,7 @@ Global Symbols
 <LI><a href="#[60]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_memcpy
 </UL>
 <BR>[Called By]<UL><LI><a href="#[3e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;tMotorControl
+<LI><a href="#[40]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;tBrain
 <LI><a href="#[3f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;tAudio
 <LI><a href="#[35]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;osRtxTimerThread
 </UL>
@@ -499,6 +500,7 @@ Global Symbols
 <LI><a href="#[60]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_memcpy
 </UL>
 <BR>[Called By]<UL><LI><a href="#[40]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;tBrain
+<LI><a href="#[14]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART2_IRQHandler
 <LI><a href="#[36]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;osRtxTimerTick
 </UL>
 
@@ -731,10 +733,11 @@ Global Symbols
 <P><STRONG><a name="[27]"></a>SystemInit</STRONG> (Thumb, 266 bytes, Stack size 0 bytes, system_mkl25z4.o(i.SystemInit))
 <BR>[Address Reference Count : 1]<UL><LI> startup_mkl25z4.o(.text)
 </UL>
-<P><STRONG><a name="[14]"></a>UART2_IRQHandler</STRONG> (Thumb, 30 bytes, Stack size 8 bytes, athena.o(i.UART2_IRQHandler))
-<BR><BR>[Stack]<UL><LI>Max Depth = 8<LI>Call Chain = UART2_IRQHandler
+<P><STRONG><a name="[14]"></a>UART2_IRQHandler</STRONG> (Thumb, 44 bytes, Stack size 8 bytes, athena.o(i.UART2_IRQHandler))
+<BR><BR>[Stack]<UL><LI>Max Depth = 64<LI>Call Chain = UART2_IRQHandler &rArr; osMessageQueuePut &rArr; osRtxPostProcess &rArr; osRtxErrorNotify &rArr; __ARM_common_switch8
 </UL>
-<BR>[Calls]<UL><LI><a href="#[83]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__NVIC_ClearPendingIRQ
+<BR>[Calls]<UL><LI><a href="#[61]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;osMessageQueuePut
+<LI><a href="#[83]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__NVIC_ClearPendingIRQ
 </UL>
 <BR>[Address Reference Count : 1]<UL><LI> startup_mkl25z4.o(RESET)
 </UL>
@@ -787,7 +790,7 @@ Global Symbols
 <LI><a href="#[8e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;move
 </UL>
 
-<P><STRONG><a name="[26]"></a>main</STRONG> (Thumb, 110 bytes, Stack size 0 bytes, athena.o(i.main))
+<P><STRONG><a name="[26]"></a>main</STRONG> (Thumb, 124 bytes, Stack size 0 bytes, athena.o(i.main))
 <BR><BR>[Stack]<UL><LI>Max Depth = 28<LI>Call Chain = main &rArr; initUART2 &rArr; __aeabi_uidivmod
 </UL>
 <BR>[Calls]<UL><LI><a href="#[8b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;osThreadNew
@@ -814,7 +817,7 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[3e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;tMotorControl
 </UL>
 
-<P><STRONG><a name="[41]"></a>movingLED</STRONG> (Thumb, 252 bytes, Stack size 24 bytes, athena.o(i.movingLED))
+<P><STRONG><a name="[41]"></a>movingLED</STRONG> (Thumb, 246 bytes, Stack size 24 bytes, athena.o(i.movingLED))
 <BR><BR>[Stack]<UL><LI>Max Depth = 72<LI>Call Chain = movingLED &rArr; osEventFlagsSet &rArr; osRtxPostProcess &rArr; osRtxErrorNotify &rArr; __ARM_common_switch8
 </UL>
 <BR>[Calls]<UL><LI><a href="#[5a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;osEventFlagsSet
@@ -888,19 +891,20 @@ Global Symbols
 </UL>
 <BR>[Address Reference Count : 1]<UL><LI> athena.o(i.main)
 </UL>
-<P><STRONG><a name="[40]"></a>tBrain</STRONG> (Thumb, 108 bytes, Stack size 16 bytes, athena.o(i.tBrain))
+<P><STRONG><a name="[40]"></a>tBrain</STRONG> (Thumb, 126 bytes, Stack size 16 bytes, athena.o(i.tBrain))
 <BR><BR>[Stack]<UL><LI>Max Depth = 72<LI>Call Chain = tBrain &rArr; osMessageQueuePut &rArr; osRtxPostProcess &rArr; osRtxErrorNotify &rArr; __ARM_common_switch8
 </UL>
 <BR>[Calls]<UL><LI><a href="#[61]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;osMessageQueuePut
+<LI><a href="#[5e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;osMessageQueueGet
+<LI><a href="#[5a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;osEventFlagsSet
+<LI><a href="#[59]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;osEventFlagsClear
 </UL>
 <BR>[Address Reference Count : 1]<UL><LI> athena.o(i.main)
 </UL>
-<P><STRONG><a name="[3e]"></a>tMotorControl</STRONG> (Thumb, 136 bytes, Stack size 8 bytes, athena.o(i.tMotorControl))
+<P><STRONG><a name="[3e]"></a>tMotorControl</STRONG> (Thumb, 116 bytes, Stack size 8 bytes, athena.o(i.tMotorControl))
 <BR><BR>[Stack]<UL><LI>Max Depth = 112<LI>Call Chain = tMotorControl &rArr; stop &rArr; rightMotorControl &rArr; setDutyCycle &rArr; __aeabi_ddiv &rArr; _double_round
 </UL>
 <BR>[Calls]<UL><LI><a href="#[5e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;osMessageQueueGet
-<LI><a href="#[5a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;osEventFlagsSet
-<LI><a href="#[59]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;osEventFlagsClear
 <LI><a href="#[97]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;stop
 <LI><a href="#[8e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;move
 <LI><a href="#[8f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__ARM_common_switch8
