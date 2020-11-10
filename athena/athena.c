@@ -28,19 +28,15 @@
 
 #define AUDIO 0
 
-#define POWER 80
-#define LOWPOWER 20
+#define POWER 100
+#define LOWPOWER 10
 
-int sheet1[] = {D6,C6,D6,E6,D6,A5,C6,C6,C6,A6,Gb6,D6,C6,D6,E6,D6,A5,B5,C6,D6,E6,D6,C6,G5,A5,C6,D6,E6,D6,A5,C6,G6,G6,A6,Gb6,D6,E6,F6,G6,A6,G6,F6,E6,C6,A5,A6,D7,E7,D7};
-int count1[] = {3 ,1 ,1 ,1 ,2 ,2 ,2 ,2 ,2 ,2 ,6  ,3 ,1 ,1 ,1 ,2 ,2 ,2 ,2 ,2 ,2 ,3 ,2 ,2 ,2 ,1 ,1 ,1 ,2 ,2 ,2 ,4 ,1 ,1 ,4  ,1 ,1 ,2 ,2 ,2 ,1 ,1 ,2 ,2 ,3 ,1 ,1 ,1 ,10};
+int sheet1[] = {Db5,Ab5,Ab5,Db6,B5,Db6,B5,Ab5,Gb5,Ab5,Db5,B4,Db5,Ab5,Ab5,E5,Eb5,Eb5,E5,Eb5,Db5,B4,Db5,E5,Eb5,Db5,Ab5,Ab5,Db6,B5,Ab5,Ab5,B5,Db6,Ab5,Ab5,Gb5,E5,Db5,Db5,B4,Eb5,B4,Eb5,E5,Db5,Db5,Ab5,Ab5,Db6,B5,Ab5,Ab5,Gb5,E5,E5,Gb5,Ab5,Db5,Db5,Ab5,Db5,Db5,Db6,B5,Ab5,Ab5,Gb5,E5,E5,B4,Db5,Db5,Ab5,Ab5,Db6,B5,Ab5,Ab5,Gb5,E5,E5,Gb5,Ab5,Db5,Db5,Ab5,Db5,Db5,E5,Db5,B4,Ab5,E5,Ab5,B4,Db5};
+int count1[] = {4  ,4  ,4  ,4  ,2 ,1  ,1 ,2  ,2  ,4  ,2  ,2 ,4  ,4  ,4  ,4 ,2  ,1  ,1 ,1  ,1  ,2 ,4  ,2 ,2  ,4  ,4  ,4  ,4  ,2 ,1  ,1  ,2 ,2  ,4  ,2  ,2  ,4 ,4  ,4  ,4 ,2  ,2 ,2  ,2 ,8  ,2  ,2  ,2  ,2  ,2 ,2  ,4  ,2  ,2 ,2 ,2  ,2  ,2  ,2  ,2  ,2  ,2  ,2  ,2 ,2  ,4  ,2  ,2 ,2 ,2 ,8  ,2  ,2  ,2  ,2  ,2 ,2  ,4  ,2  ,2 ,2 ,2  ,2  ,2  ,4  ,2  ,2  ,2  ,2 ,4  ,4 ,2  ,2 ,2  ,2 ,8};
 int length1 = sizeof(sheet1)/sizeof(int);
  
-int sheet2[] = {Eb5,C6,Ab5,Bb5,C6,Bb5,Ab5,F5,Eb5,Eb5,C6,Ab5,Bb5,C6,Bb5,Ab5,F5,Ab5,Ab5,Bb5,C6,Bb5,Ab5,F5,Ab5,Ab5};
-int count2[] = {8  ,6 ,2  ,2  ,2 ,2  ,2  ,4 ,4  ,8  ,6 ,2  ,2  ,2 ,2  ,2  ,4 ,4  ,14 ,2  ,2 ,2  ,2  ,4 ,4  ,20};
+int sheet2[] = {F5,C6,B5,C6,F6,C6,B5,C6,F5,Db6,C6,Db6,F6,Db6,C6,Db6,F5,D6,Db6,D6,F6,D6,Db6,D6,F5,Db6,C6,Db6,F6,Db6,C6,Db6,F5,C6,Bb5,C6,F6,C6,Bb5,C6,F5,C6,Bb5,C6,F6,C6,Bb5,C6,F5,D6,Db6,D6,F6,D6,Db6,D6,F5,Db6,C6,Db6,F6,Db6,C6,Db6,F5,C6,Bb5,C6,F6,C6,Bb5,C6,F5,C6,Bb5,C6,F6,C6,Bb5,C6};
 int length2 = sizeof(sheet2)/sizeof(int);
- 
-int sheet3[] = {F5,C6,B5,C6,F6,C6,B5,C6,F5,Db6,C6,Db6,F6,Db6,C6,Db6,F5,D6,Db6,D6,F6,D6,Db6,D6,F5,Db6,C6,Db6,F6,Db6,C6,Db6,F5,C6,Bb5,C6,F6,C6,Bb5,C6,F5,C6,Bb5,C6,F6,C6,Bb5,C6,F5,D6,Db6,D6,F6,D6,Db6,D6,F5,Db6,C6,Db6,F6,Db6,C6,Db6,F5,C6,Bb5,C6,F6,C6,Bb5,C6,F5,C6,Bb5,C6,F6,C6,Bb5,C6};
-int length3 = sizeof(sheet3)/sizeof(int);
 
 osMessageQueueId_t motorMsg, audioMsg;
 
@@ -320,42 +316,31 @@ void tMotorControl (void *argument) {
 
 void tAudio(void *argument)
 {
-	//play startup tune
-	playNote(200, D5, 2);
-	playNote(200, D5, 2);
-	playNote(200, Db5, 2);
-	playNote(200, Db5, 2);
-	playNote(200, E5, 2);
-	playNote(200, E5, 2);
-	playNote(200, Eb5, 2);
-	playNote(200, Eb5, 2);
-	osDelay(500);
 	int tune = 1;
 	int i = 0;
 	int j = 0;
-	int k = 0;
 	for(;;)
 	{
 		osMessageQueueGet(audioMsg, &tune, NULL, 0);		
 		switch(tune)
 		{
+		case 0: //BT
+			playNote(100, D5, 2);
+			playNote(100, D5, 2);
+			playNote(100, Db5, 2);
+			playNote(100, Db5, 2);
+			tune = 1;
+			i = 0;
+			break;
 		case 1:
-			playNote(250, sheet1[i], count1[i]);
+			playNote(120, sheet1[i], count1[i]);
 			i = (i >= length1-1) ? 0 : i+1;
 			j = 0;
-			k = 0;
 			break;
 		case 2:
-			playNote(125, sheet2[j], count2[j]);
+			playNote(100, sheet2[j], 1);
 			j = (j >= length2-1) ? 0 : j+1;
 			i = 0;
-			k = 0;
-			break;
-		case 3:
-			playNote(100, sheet3[k], 1);
-			k = (k >= length3-1) ? 0 : k+1;
-			i = 0;
-			j = 0;
 			break;
 		}
 	}
@@ -369,8 +354,12 @@ void tBrain(void *argument) {
 			data = RxData;
 			if (data != 5) {
 				osMessageQueuePut(motorMsg, &data, NULL, 0);
-			} else {
-				tune = (tune == 3) ? 1 : tune+1;
+				if (data == 10) {
+					tune = 0;
+					osMessageQueuePut(audioMsg, &tune, NULL, 0);
+				}
+		  } else {
+				tune = (tune == 2) ? 1 : tune+1;
 				osMessageQueuePut(audioMsg, &tune, NULL, 0);
 			}
 		}
