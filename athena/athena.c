@@ -29,6 +29,8 @@
 #define AUDIO 0
 
 #define POWER 100
+#define LPOWER 100
+#define RPOWER 80
 #define LOWPOWER 0
 
 int sheet1[] = {Db5,Ab5,Ab5,Db6,B5,Db6,B5,Ab5,Gb5,Ab5,Db5,B4,Db5,Ab5,Ab5,E5,Eb5,Eb5,E5,Eb5,Db5,B4,Db5,E5,Eb5,Db5,Ab5,Ab5,Db6,B5,Ab5,Ab5,B5,Db6,Ab5,Ab5,Gb5,E5,Db5,Db5,B4,Eb5,B4,Eb5,E5,Db5,Db5,Ab5,Ab5,Db6,B5,Ab5,Ab5,Gb5,E5,E5,Gb5,Ab5,Db5,Db5,Ab5,Db5,Db5,Db6,B5,Ab5,Ab5,Gb5,E5,E5,B4,Db5,Db5,Ab5,Ab5,Db6,B5,Ab5,Ab5,Gb5,E5,E5,Gb5,Ab5,Db5,Db5,Ab5,Db5,Db5,E5,Db5,B4,Ab5,E5,Ab5,B4,Db5};
@@ -39,6 +41,7 @@ int sheet2[] = {F5,C6,B5,C6,F6,C6,B5,C6,F5,Db6,C6,Db6,F6,Db6,C6,Db6,F5,D6,Db6,D6
 int length2 = sizeof(sheet2)/sizeof(int);
 
 osMessageQueueId_t brainMsg, motorMsg, audioMsg;
+uint8_t PrvData = 20;
 
 osEventFlagsId_t led_flag;
 
@@ -87,7 +90,10 @@ void UART2_IRQHandler(void) {
 		//Character receieved
 		uint8_t RxData;
 		RxData = UART2->D;
-		osMessageQueuePut(brainMsg, &RxData, NULL, 0);
+		if (RxData != PrvData) {
+			PrvData = RxData;
+			osMessageQueuePut(brainMsg, &RxData, NULL, 0);
+		}
 	}
 }
 
@@ -222,40 +228,40 @@ void stop() {
 
 void move(enum Direction direction) {
 	
-	osEventFlagsClear(led_flag, 0x00000001);
+	osEventFlagsClear(led_flag, 0x00000005);
 	osEventFlagsSet(led_flag, 0x00000002);
 	switch(direction) {
 	case LEFT:
-		leftMotorControl(POWER, 1); // make left move backwards
-		rightMotorControl(POWER, 0); // make right move forwards
+		leftMotorControl(LPOWER/2, 1); // make left move backwards
+		rightMotorControl(RPOWER/2, 0); // make right move forwards
 		break;
 	case RIGHT:
-		leftMotorControl(POWER, 0); // make left move forwards
-		rightMotorControl(POWER, 1); // make right move backwards
+		leftMotorControl(LPOWER/2, 0); // make left move forwards
+		rightMotorControl(RPOWER/2, 1); // make right move backwards
 		break;
 	case FORWARD:
-		leftMotorControl(POWER, 0); // make left move forwards
-		rightMotorControl(POWER, 0); // make right move forwards
+		leftMotorControl(LPOWER, 0); // make left move forwards
+		rightMotorControl(RPOWER, 0); // make right move forwards
 		break;
 	case BACKWARD:
-		leftMotorControl(POWER, 1); // make left move backwards
-		rightMotorControl(POWER, 1); // make right move backwards
+		leftMotorControl(LPOWER, 1); // make left move backwards
+		rightMotorControl(RPOWER, 1); // make right move backwards
 		break;
 	case FORWARD_LEFT:
 		leftMotorControl(LOWPOWER, 0); // make left move forwards
-		rightMotorControl(POWER, 0); // make right move forwards slightly faster
+		rightMotorControl(RPOWER, 0); // make right move forwards slightly faster
 		break;
 	case FORWARD_RIGHT:
-		leftMotorControl(POWER, 0); // make left move forwards slightly faster
+		leftMotorControl(LPOWER, 0); // make left move forwards slightly faster
 		rightMotorControl(LOWPOWER, 0); // make right move forwards 
 		break;
 	case BACKWARD_RIGHT:
-		leftMotorControl(POWER, 1); // make left move backwards slightly faster
+		leftMotorControl(LPOWER, 1); // make left move backwards slightly faster
 		rightMotorControl(LOWPOWER, 1); // make right move backwards 
 		break;
 	case BACKWARD_LEFT:
 		leftMotorControl(LOWPOWER, 1); // make left move backwards 
-		rightMotorControl(POWER, 1); // make right move backwards slightly faster
+		rightMotorControl(RPOWER, 1); // make right move backwards slightly faster
 		break;
   }
 }
@@ -354,8 +360,9 @@ void tBrain(void *argument) {
 			if (data == 10) {
 				tune = 0;
 				osMessageQueuePut(audioMsg, &tune, NULL, 0);
-				osEventFlagsSet(led_flag, 0x00000004);
 				osEventFlagsClear(led_flag, 0x00000003);
+				osEventFlagsSet(led_flag, 0x00000004);
+				
 			}
 		} else {
 			tune = (tune == 2) ? 1 : tune+1;
@@ -364,17 +371,13 @@ void tBrain(void *argument) {
 	}
 }
 
-void movingLED (void *argument) {
+void LED_back (void *argument) {
 	
 	//only set to zero bits in pos 1, 2, 3
 	uint32_t reset_LED = 0x00000008;
-	uint32_t LED_reg_to_zero = 0xFFFFF807;
-	uint32_t AtMax = 0x00000400;
-	uint32_t AllOn = 0x000007F8;
 	uint32_t back_LED = 0x00000800;
 	
 	PTC->PDOR = reset_LED;
-	uint32_t amount_to_increment = 0;
 	
 	
 	for (;;) {
@@ -382,32 +385,74 @@ void movingLED (void *argument) {
 		uint32_t status = osEventFlagsGet(led_flag);
 		
 		if (status == 0x00000002) { //moving running led
-			uint32_t regState = PTC->PDOR;
-		
-			if (regState &= AtMax) { //triggers when the 10 bit is positive. This scene occurs when counter count all the way up or if all led are on
-				
-				PTC->PDOR &= LED_reg_to_zero;
-				PTC->PDOR |= reset_LED;
-				
-			} else {
-				
-				amount_to_increment = PTC->PDOR & (~LED_reg_to_zero); //get only the bits responsible for the front led register
-				PTC->PDOR += amount_to_increment;
-			}
-			
-			//blink the front led at a fixed timing
+
 			PTC->PDOR ^= back_LED;
 			
 		
-		osDelay(500);
+			osDelay(500);
 		}
 		
-		else if (status==0x00000001){ //stationery LED pattern
-			PTC->PDOR |= AllOn;
+		else { //stationery LED pattern
 			PTC->PDOR ^= back_LED;
 			
 			osDelay(250);
 			
+			
+		}
+	}
+}
+
+void movingLED_front (void *argument) {
+	
+	//only set to zero bits in pos 1, 2, 3
+	uint32_t reset_LED = 0x00000008;
+	uint32_t LED_reg_to_zero = 0xFFFFF807;
+	uint32_t AtMax = 0x00000400;
+	
+	PTC->PDOR = reset_LED;
+	uint32_t amount_to_increment = 0;
+	
+	
+	for (;;) {
+		osEventFlagsWait(led_flag, 0x00000002, osFlagsWaitAll | osFlagsNoClear, osWaitForever);
+		
+		uint32_t regState = PTC->PDOR;
+	
+		if (regState &= AtMax) { //triggers when the 10 bit is positive. This scene occurs when counter count all the way up or if all led are on
+			
+			PTC->PDOR &= LED_reg_to_zero;
+			PTC->PDOR |= reset_LED;
+			
+		} else {
+			
+			amount_to_increment = PTC->PDOR & (~LED_reg_to_zero); //get only the bits responsible for the front led register
+			PTC->PDOR += amount_to_increment;
+		}
+		
+		
+	
+		osDelay(500);
+	}
+		
+}
+
+void stationeryLED_Front (void *argument) {
+
+	uint32_t AllOn = 0x000007F8;
+	uint32_t status;
+
+	
+	
+	for (;;) {
+		
+		status = osEventFlagsWait(led_flag, 0x00000005, osFlagsWaitAny | osFlagsNoClear, osWaitForever); 
+		
+		
+		
+		if (status==0x00000001){ //stationery LED pattern
+			PTC->PDOR |= AllOn;
+			
+			osDelay(250);
 			
 		} else {
 			PTC->PDOR |= AllOn;
@@ -426,7 +471,6 @@ void movingLED (void *argument) {
 		
 	}
 }
-
 /*have a forward blinking and a backward always on thread perhaps.
 When the bot moves, unflag the stationary, flag the blinking
 When the bot blutooth connect, unflag stationary, flag the blinking. Run the blink then unflag itself and flag stationery
@@ -449,7 +493,11 @@ int main (void) {
 		osThreadNew(tMotorControl, NULL,NULL);
 	  osThreadNew(tAudio, NULL, NULL);
 		osThreadNew(tBrain, NULL, NULL);
-		osThreadNew(movingLED, NULL, NULL);
+		osThreadNew(movingLED_front, NULL, NULL);
+		osThreadNew(stationeryLED_Front, NULL, NULL);
+		osThreadNew(LED_back, NULL, NULL);
+	
+	
 		led_flag = osEventFlagsNew(NULL);
 		osKernelStart();                      // Start thread execution
 		for (;;) {}
